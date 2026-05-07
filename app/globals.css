@@ -128,3 +128,15 @@
     @apply font-sans;
   }
 }
+html,
+body,
+#__next {
+  min-height: 100%;
+  background:
+    radial-gradient(circle at top left, rgba(99,102,241,0.12), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(168,85,247,0.10), transparent 35%),
+    #020205;
+
+  color: white;
+  overflow-x: hidden;
+}
