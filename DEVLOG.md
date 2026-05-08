@@ -31,3 +31,34 @@ Plan for tomorrow:
 - Continue improving understanding of Next.js and TypeScript patterns
 - Start documenting architecture and setup decisions
 - Begin adding testing structure for the audit engine
+
+## Day 2 — 2026-05-08
+
+**Hours worked:** 5
+
+**What I did:**
+- Improved the audit engine and recommendation logic
+- Added better savings calculations and overlap detection
+- Worked on AI-generated summaries using different LLM APIs
+- Tried OpenAI, Gemini, and HuggingFace integrations and handled multiple API and quota issues
+- Added fallback summaries so the app still works even if AI APIs fail
+- Fixed many TypeScript, ESLint, and CI/CD build issues
+- Configured GitHub Actions and fixed production build problems with Supabase environment variables
+- Improved project structure and cleaned up several components and hooks
+
+**What I learned:**
+- CI/CD builds can fail even when local development works fine
+- External AI APIs are unreliable without proper fallback handling
+- Rule-based audit logic works better for financial reasoning than depending fully on AI
+- Managing environment variables correctly is important for production builds
+
+**Blockers / what I'm stuck on:**
+- Free AI APIs are heavily limited and unstable
+- The audit engine still needs more realistic financial analysis and benchmarking
+- Need to add tests, transactional emails, and Open Graph support
+
+**Plan for tomorrow:**
+- Improve audit reasoning and recommendation quality
+- Add benchmark-style insights and better savings explanations
+- Start writing audit engine tests
+- Begin documentation files like PRICING_DATA.md and ARCHITECTURE.md
