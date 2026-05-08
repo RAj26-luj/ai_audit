@@ -29,7 +29,9 @@ import type {
   StepType,
   FormDataType,
 } from "@/types/home";
-
+import {
+  generateAISummary,
+} from "@/lib/ai-summary";
 export function useHomeAudit() {
 
   const router =
@@ -46,6 +48,8 @@ export function useHomeAudit() {
     useState<FormDataType>({
       selectedTools: [],
       toolDetails: {},
+      teamSize: 1,
+      useCase: "coding",
     });
 
   // result
@@ -97,106 +101,125 @@ export function useHomeAudit() {
   }, [formData]);
 
   // run audit
-  const startAudit =
-    async () => {
+const startAudit =
+  async () => {
 
-      setStep("loading");
+    setStep("loading");
 
-      const tools: ToolSelection[] =
-        formData.selectedTools.map(
-          (toolId) => {
+    const tools: ToolSelection[] =
+      formData.selectedTools.map(
+        (toolId) => {
 
-            const config =
-              TOOLS_CONFIG.find(
-                (t) =>
-                  t.id === toolId
-              );
+          const config =
+            TOOLS_CONFIG.find(
+              (t) =>
+                t.id === toolId
+            );
 
-            const details =
-              formData.toolDetails[
-                toolId
-              ];
+          const details =
+            formData.toolDetails[
+              toolId
+            ];
 
-            return {
-              id: toolId,
+          return {
+            id: toolId,
 
-              name:
-                config?.name ||
-                toolId,
+            name:
+              config?.name ||
+              toolId,
 
-              plan:
-                details?.plan ||
-                "Pro",
+            plan:
+              details?.plan ||
+              "Pro",
 
-              pricePerSeat:
-                details?.monthlySpend ||
-                20,
+            pricePerSeat:
+              details?.monthlySpend ||
+              20,
 
-              seats:
-                details?.seats ||
-                1,
-            };
-          }
-        );
-
-      // generate
-      const result =
-        generateAudit({
-          tools,
-          teamSize: 10,
-        });
-
-      // save
-      const {
-        data: savedAudit,
-        error,
-      } = await supabase
-        .from("audits")
-        .insert([
-          {
-            tools,
-            result,
-          },
-        ])
-        .select()
-        .single();
-
-      // fallback
-      if (error) {
-
-        console.error(error);
-
-        setAuditResult(
-          result
-        );
-
-        setStep("results");
-
-        setShowLeadModal(
-          true
-        );
-
-        return;
-      }
-
-      setAuditId(
-        savedAudit.id
+            seats:
+              details?.seats ||
+              1,
+          };
+        }
       );
 
-      setTimeout(() => {
+    // generate
+    const result =
+      generateAudit({
+        tools,
+        teamSize:
+          formData.teamSize,
+        useCase:
+          formData.useCase,
+      });
 
-        setAuditResult(
-          result
-        );
+    // ai summary
+    const aiSummary =
+      await generateAISummary({
+        yearlySpend:
+          result.totalYearlySpend,
 
-        setStep("results");
+        waste:
+          result.potentialSavingsPercentage,
 
-        setShowLeadModal(
-          true
-        );
+        recommendations:
+          result.recommendations,
+      });
 
-      }, 2500);
-    };
+    result.summary =
+      aiSummary;
+
+    // save
+    const {
+      data: savedAudit,
+      error,
+    } = await supabase
+      .from("audits")
+      .insert([
+        {
+          tools,
+          result,
+        },
+      ])
+      .select()
+      .single();
+
+    // fallback
+    if (error) {
+
+      console.error(error);
+
+      setAuditResult(
+        result
+      );
+
+      setStep("results");
+
+      setShowLeadModal(
+        true
+      );
+
+      return;
+    }
+
+    setAuditId(
+      savedAudit.id
+    );
+
+    setTimeout(() => {
+
+      setAuditResult(
+        result
+      );
+
+      setStep("results");
+
+      setShowLeadModal(
+        true
+      );
+
+    }, 2500);
+  };
 
   // lead submit
   const submitLead =

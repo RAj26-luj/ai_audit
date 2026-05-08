@@ -1,177 +1,254 @@
 export interface Recommendation {
   title: string;
-
   description: string;
-
   impact: "High" | "Medium" | "Low";
+  savings?: number;
 }
 
 export interface AuditResult {
   totalMonthlySpend: number;
-
   totalYearlySpend: number;
-
   estimatedWasteMonthly: number;
-
   estimatedWasteYearly: number;
-
   optimizationScore: number;
-
   potentialSavingsPercentage: number;
-
   summary: string;
-
   recommendations: Recommendation[];
 }
 
 export interface ToolSelection {
   id: string;
-
   name: string;
-
   plan: string;
-
   pricePerSeat: number;
-
   seats: number;
 }
 
 export interface AuditInput {
   tools: ToolSelection[];
-
   teamSize: number;
+  useCase:
+    | "coding"
+    | "writing"
+    | "research"
+    | "data"
+    | "mixed";
 }
-
-const WASTE_BENCHMARK = 0.22;
 
 export function generateAudit(
   data: AuditInput
 ): AuditResult {
-  const { tools, teamSize } = data;
+
+  const {
+    tools,
+    teamSize,
+    useCase,
+  } = data;
+
+  let waste = 12;
+
+  const rec: Recommendation[] =
+    [];
 
   const totalMonthlySpend =
-    tools.reduce((acc, tool) => {
-      return (
-        acc +
-        tool.pricePerSeat *
-          tool.seats
-      );
-    }, 0);
+    tools.reduce(
+      (a, t) =>
+        a +
+        t.pricePerSeat *
+          t.seats,
+      0
+    );
 
   const totalYearlySpend =
     totalMonthlySpend * 12;
 
-  let wasteFactor =
-    WASTE_BENCHMARK;
-
-  const llmTools = [
-    "chatgpt",
-    "claude",
-    "gemini",
-  ].filter((id) =>
-    tools.some((t) =>
-      t.id
-        .toLowerCase()
-        .includes(id)
-    )
-  );
-
-  if (llmTools.length > 1) {
-    wasteFactor +=
-      (llmTools.length - 1) *
-      0.05;
-  }
-
-  const estimatedWasteMonthly =
-    totalMonthlySpend *
-    wasteFactor;
-
-  const estimatedWasteYearly =
-    estimatedWasteMonthly * 12;
-
-  const optimizationScore =
-    Math.max(
-      0,
-      Math.min(
-        100,
-        Math.round(
-          100 - wasteFactor * 200
-        )
+  const llmTools =
+    tools.filter((t) =>
+      [
+        "chatgpt",
+        "claude",
+        "gemini",
+      ].some((x) =>
+        t.id
+          .toLowerCase()
+          .includes(x)
       )
     );
 
-  const recommendations: Recommendation[] =
-    [];
-
   if (llmTools.length > 1) {
-    recommendations.push({
+
+    waste += 15;
+
+    rec.push({
       title:
-        "Consolidate AI Workflows",
+        "Reduce Tool Overlap",
 
       description:
-        "You are paying for multiple overlapping AI platforms. Standardizing your stack can reduce costs significantly.",
+        "Multiple general-purpose AI assistants overlap heavily in functionality.",
 
       impact: "High",
+
+      savings: Math.round(
+        totalMonthlySpend * 0.15
+      ),
     });
   }
 
-  tools.forEach((tool) => {
-    if (
-      tool.seats >
-      teamSize * 1.1
-    ) {
-      recommendations.push({
-        title: `Reduce ${tool.name} Seats`,
+  tools.forEach((t) => {
 
-        description: `You currently have ${tool.seats} seats allocated for a ${teamSize}-member team.`,
+    if (
+      t.name === "Cursor" &&
+      t.plan ===
+        "Business" &&
+      t.seats <= 2
+    ) {
+
+      const save =
+        (40 - 20) *
+        t.seats;
+
+      waste += 15;
+
+      rec.push({
+        title:
+          "Downgrade Cursor Plan",
+
+        description:
+          `Cursor Business is unnecessary for a ${t.seats}-person team. Cursor Pro provides similar value at a lower cost.`,
+
+        impact: "High",
+
+        savings: save,
+      });
+    }
+
+    if (
+      t.name ===
+        "ChatGPT" &&
+      t.plan === "Team" &&
+      t.seats <= 2
+    ) {
+
+      const save =
+        (30 - 20) *
+        t.seats;
+
+      waste += 10;
+
+      rec.push({
+        title:
+          "Switch ChatGPT Team to Plus",
+
+        description:
+          `ChatGPT Team pricing is inefficient for very small teams.`,
 
         impact: "Medium",
+
+        savings: save,
+      });
+    }
+
+    if (
+      t.seats >
+      teamSize
+    ) {
+
+      waste += 5;
+
+      rec.push({
+        title: `Reduce ${t.name} Seats`,
+
+        description:
+          `You are paying for more seats than your team size.`,
+
+        impact: "Medium",
+
+        savings:
+          t.pricePerSeat,
       });
     }
   });
 
   if (
-    totalYearlySpend > 5000
+    useCase ===
+      "writing" &&
+    tools.some((t) =>
+      t.id.includes(
+        "cursor"
+      )
+    )
   ) {
-    recommendations.push({
+
+    waste += 8;
+
+    rec.push({
       title:
-        "Switch to Annual Billing",
+        "Developer Tool Mismatch",
 
       description:
-        "Annual contracts could reduce your AI operational spend by 15-20%.",
+        "Cursor is optimized for coding teams, not writing workflows.",
 
-      impact: "Low",
+      impact: "Medium",
+
+      savings: Math.round(
+        totalMonthlySpend * 0.08
+      ),
     });
   }
 
-  const summary = `
-Your organization currently spends approximately $${Math.round(
-    totalYearlySpend
-  ).toLocaleString()} annually on AI tools.
+  if (
+    totalYearlySpend >
+    5000
+  ) {
 
-Our engine estimates that nearly ${Math.round(
-    wasteFactor * 100
-  )}% of this spend may be optimized through billing improvements, seat consolidation, and removing overlapping services.
+    rec.push({
+      title:
+        "Consider Annual Billing",
+
+      description:
+        "Annual contracts may reduce costs further.",
+
+      impact: "Low",
+
+      savings: Math.round(
+        totalMonthlySpend * 0.1
+      ),
+    });
+  }
+
+  waste = Math.min(
+    waste,
+    45
+  );
+
+  const estimatedWasteMonthly =
+    Math.round(
+      totalMonthlySpend *
+        (waste / 100)
+    );
+
+  const estimatedWasteYearly =
+    estimatedWasteMonthly *
+    12;
+
+  const optimizationScore =
+    100 - waste;
+
+  const summary = `
+Your team spends around $${totalYearlySpend.toLocaleString()} yearly on AI tools.
+
+We identified opportunities to reduce overlapping subscriptions, optimize seat allocation, and better align tools with your workflow.
 `;
 
   return {
     totalMonthlySpend,
-
     totalYearlySpend,
-
     estimatedWasteMonthly,
-
     estimatedWasteYearly,
-
     optimizationScore,
-
     potentialSavingsPercentage:
-      Math.round(
-        wasteFactor * 100
-      ),
-
+      waste,
     summary,
-
-    recommendations,
+    recommendations: rec,
   };
 }

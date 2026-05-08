@@ -1,8 +1,6 @@
 // recommendation list
 
-import {
-  Zap,
-} from "lucide-react";
+import { Zap } from "lucide-react";
 
 type Props = {
   recommendations: any[];
@@ -30,21 +28,29 @@ export default function Recommendations({
 
           <div
             key={idx}
-
-            className="bg-white/5 p-5 rounded-3xl border border-white/10"
+            className="bg-white/5 p-6 rounded-3xl border border-white/10 hover:border-indigo-500/30 transition"
           >
 
-            <span className="text-[10px] font-bold uppercase px-2 py-1 rounded-full bg-indigo-500/10 text-indigo-400">
+            <div className="flex items-center justify-between gap-4">
 
-              {rec.impact}
-            </span>
+              <span className="text-[10px] font-bold uppercase px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400">
 
-            <h4 className="font-bold mt-4">
+                {rec.impact} Impact
+              </span>
+
+              {rec.savings && (
+                <span className="text-sm font-semibold text-emerald-400">
+                  Save ${rec.savings}/mo
+                </span>
+              )}
+            </div>
+
+            <h4 className="font-bold text-lg mt-4">
 
               {rec.title}
             </h4>
 
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-sm text-gray-400 mt-2 leading-6">
 
               {rec.description}
             </p>

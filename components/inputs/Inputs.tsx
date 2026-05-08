@@ -57,6 +57,7 @@ export default function Inputs({
       {step === "details" && (
         <DetailsStep
           formData={formData}
+          setFormData={setFormData}
           selectedToolsData={selectedToolsData}
           updateDetail={updateDetail}
           startAudit={startAudit}

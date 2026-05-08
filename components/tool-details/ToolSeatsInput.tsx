@@ -27,7 +27,7 @@ export default function ToolSeatsInput({
 
         min="1"
 
-        value={details.seats}
+        value={details.seats || 1}
 
         onChange={(e) =>
           updateDetail(

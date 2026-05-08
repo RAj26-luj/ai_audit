@@ -42,8 +42,11 @@ export default function Results({
           <div className="lg:col-span-2 space-y-8">
 
             <ExecutiveSummary
-              summary={data.summary}
-            />
+            summary={data.summary}
+            savings={
+            data.estimatedWasteMonthly
+          }
+          />
 
             <SpendAnalysis
               monthly={

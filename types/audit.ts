@@ -4,6 +4,13 @@ export type ToolDetail = {
   monthlySpend: number;
 };
 
+export type UseCaseType =
+  | "coding"
+  | "writing"
+  | "research"
+  | "data"
+  | "mixed";
+
 export type FormDataType = {
   selectedTools: string[];
 
@@ -11,6 +18,10 @@ export type FormDataType = {
     string,
     ToolDetail
   >;
+
+  teamSize: number;
+
+  useCase: UseCaseType;
 };
 
 export type StepType =
