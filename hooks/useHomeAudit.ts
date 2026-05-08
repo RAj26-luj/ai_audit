@@ -222,8 +222,13 @@ const startAudit =
   };
 
   // lead submit
-  const submitLead =
-    async (leadData: any) => {
+const submitLead =
+  async (leadData: {
+    email: string;
+    company: string;
+    role: string;
+    teamSize: number;
+  }) => {
 
       try {
 
