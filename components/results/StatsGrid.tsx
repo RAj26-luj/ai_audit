@@ -1,8 +1,8 @@
-// top stats section
-
 import {
   TrendingDown,
   BarChart3,
+  DollarSign,
+  Briefcase,
 } from "lucide-react";
 
 import type {
@@ -21,7 +21,7 @@ export default function StatsGrid({
 }: Props) {
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 mb-8">
 
       <StatCard
         label="Estimated Yearly Waste"
@@ -30,7 +30,7 @@ export default function StatsGrid({
           data.estimatedWasteYearly || 0
         }
 
-        subtext="Potential savings opportunity"
+        subtext="Potential yearly savings"
 
         icon={TrendingDown}
 
@@ -47,6 +47,30 @@ export default function StatsGrid({
         subtext="Recurring monthly inefficiency"
 
         icon={BarChart3}
+      />
+
+      <StatCard
+        label="Potential Savings"
+
+        value={
+          data.totalPotentialSavings || 0
+        }
+
+        subtext="Estimated optimization impact"
+
+        icon={DollarSign}
+      />
+
+      <StatCard
+        label="Spend Per Employee"
+
+        value={
+          data.spendPerEmployee || 0
+        }
+
+        subtext="Monthly AI spend per team member"
+
+        icon={Briefcase}
       />
 
       <OptimizationScore

@@ -1,14 +1,18 @@
-// spend analysis cards
-
 type Props = {
   monthly: number;
 
   yearly: number;
+
+  spendPerEmployee: number;
+
+  benchmarkMessage: string;
 };
 
 export default function SpendAnalysis({
   monthly,
   yearly,
+  spendPerEmployee,
+  benchmarkMessage,
 }: Props) {
 
   return (
@@ -22,7 +26,7 @@ export default function SpendAnalysis({
         </h3>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 p-6">
 
         <div className="rounded-2xl bg-black/30 border border-white/5 p-6">
 
@@ -54,6 +58,40 @@ export default function SpendAnalysis({
               yearly || 0
             ).toLocaleString()}
           </h3>
+        </div>
+
+        <div className="rounded-2xl bg-black/30 border border-white/5 p-6">
+
+          <p className="text-sm text-gray-500 mb-2">
+
+            Spend Per Employee
+          </p>
+
+          <h3 className="text-4xl font-black">
+
+            $
+            {Math.round(
+              spendPerEmployee || 0
+            ).toLocaleString()}
+          </h3>
+
+          <p className="text-xs text-gray-500 mt-2">
+
+            Monthly AI spend per employee
+          </p>
+        </div>
+
+        <div className="rounded-2xl bg-black/30 border border-white/5 p-6">
+
+          <p className="text-sm text-gray-500 mb-2">
+
+            Benchmark Insight
+          </p>
+
+          <p className="text-sm leading-6 text-gray-300">
+
+            {benchmarkMessage}
+          </p>
         </div>
       </div>
     </section>

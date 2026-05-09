@@ -14,6 +14,7 @@ import Recommendations from "./Recommendations";
 import OptimizationCTA from "./OptimizationCTA";
 import AuditNotice from "./AuditNotice";
 import EmptyState from "./EmptyState";
+import BenchmarkInsights from "./BenchmarkInsights";
 
 type Props = {
   data: AuditResult | null;
@@ -49,14 +50,35 @@ export default function Results({
           />
 
             <SpendAnalysis
-              monthly={
-                data.totalMonthlySpend
-              }
+          monthly={
+          data.totalMonthlySpend
+         }
 
-              yearly={
-                data.totalYearlySpend
-              }
-            />
+      yearly={
+          data.totalYearlySpend
+        }
+
+      spendPerEmployee={
+        data.spendPerEmployee
+      }
+
+      benchmarkMessage={
+        data.benchmarkMessage
+      }
+      />
+      <BenchmarkInsights
+      spendPerEmployee={
+        data.spendPerEmployee
+        }
+
+        optimizationScore={
+       data.optimizationScore
+       }
+
+        wastePercentage={
+         data.potentialSavingsPercentage
+        }
+      />
           </div>
 
           {/* right */}

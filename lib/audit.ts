@@ -8,11 +8,19 @@ export interface Recommendation {
 export interface AuditResult {
   totalMonthlySpend: number;
   totalYearlySpend: number;
+
   estimatedWasteMonthly: number;
   estimatedWasteYearly: number;
+
   optimizationScore: number;
   potentialSavingsPercentage: number;
+
+  spendPerEmployee: number;
+  benchmarkMessage: string;
+  totalPotentialSavings: number;
+
   summary: string;
+
   recommendations: Recommendation[];
 }
 
@@ -27,6 +35,7 @@ export interface ToolSelection {
 export interface AuditInput {
   tools: ToolSelection[];
   teamSize: number;
+
   useCase:
     | "coding"
     | "writing"
@@ -62,6 +71,35 @@ export function generateAudit(
   const totalYearlySpend =
     totalMonthlySpend * 12;
 
+  const spendPerEmployee =
+    Math.round(
+      totalMonthlySpend /
+        Math.max(teamSize, 1)
+    );
+
+  let benchmarkMessage =
+    "";
+
+  if (
+    spendPerEmployee < 40
+  ) {
+
+    benchmarkMessage =
+      "Your AI spend per employee is below typical startup spending levels.";
+
+  } else if (
+    spendPerEmployee < 80
+  ) {
+
+    benchmarkMessage =
+      "Your AI spend per employee is within a normal startup range.";
+
+  } else {
+
+    benchmarkMessage =
+      "Your AI spend per employee is higher than average and may indicate overlapping subscriptions or inefficient tool allocation.";
+  }
+
   const llmTools =
     tools.filter((t) =>
       [
@@ -75,7 +113,9 @@ export function generateAudit(
       )
     );
 
-  if (llmTools.length > 1) {
+  if (
+    llmTools.length > 1
+  ) {
 
     waste += 15;
 
@@ -84,12 +124,13 @@ export function generateAudit(
         "Reduce Tool Overlap",
 
       description:
-        "Multiple general-purpose AI assistants overlap heavily in functionality.",
+        "Multiple general-purpose AI assistants overlap heavily in functionality and may create unnecessary recurring costs.",
 
       impact: "High",
 
       savings: Math.round(
-        totalMonthlySpend * 0.15
+        totalMonthlySpend *
+          0.15
       ),
     });
   }
@@ -114,7 +155,7 @@ export function generateAudit(
           "Downgrade Cursor Plan",
 
         description:
-          `Cursor Business is unnecessary for a ${t.seats}-person team. Cursor Pro provides similar value at a lower cost.`,
+          `Cursor Business is likely unnecessary for a ${t.seats}-person team. Cursor Pro can provide similar value at a significantly lower cost.`,
 
         impact: "High",
 
@@ -130,7 +171,7 @@ export function generateAudit(
     ) {
 
       const save =
-        (30 - 20) *
+        (25 - 20) *
         t.seats;
 
       waste += 10;
@@ -140,11 +181,98 @@ export function generateAudit(
           "Switch ChatGPT Team to Plus",
 
         description:
-          `ChatGPT Team pricing is inefficient for very small teams.`,
+          "ChatGPT Team pricing is inefficient for very small teams with limited collaboration needs.",
 
         impact: "Medium",
 
         savings: save,
+      });
+    }
+
+    if (
+      t.name === "Claude" &&
+      t.plan === "Max" &&
+      teamSize <= 3
+    ) {
+
+      waste += 10;
+
+      rec.push({
+        title:
+          "Review Claude Max Usage",
+
+        description:
+          "Claude Max is expensive for smaller teams and may be unnecessary unless usage volume is extremely high.",
+
+        impact: "Medium",
+
+        savings: 50,
+      });
+    }
+
+    if (
+      t.name === "v0.dev" &&
+      useCase !== "coding"
+    ) {
+
+      waste += 6;
+
+      rec.push({
+        title:
+          "v0.dev Workflow Mismatch",
+
+        description:
+          "v0.dev is primarily valuable for frontend and engineering workflows.",
+
+        impact: "Low",
+
+        savings: 20,
+      });
+    }
+
+    if (
+      t.name === "GitHub Copilot" &&
+      tools.some(
+        (x) =>
+          x.name === "Cursor"
+      )
+    ) {
+
+      waste += 8;
+
+      rec.push({
+        title:
+          "Coding Assistant Overlap",
+
+        description:
+          "Cursor and GitHub Copilot provide overlapping coding assistance features for many teams.",
+
+        impact: "Medium",
+
+        savings: 15,
+      });
+    }
+
+    if (
+      t.name === "OpenAI API" &&
+      tools.some(
+        (x) =>
+          x.name === "ChatGPT"
+      )
+    ) {
+
+      waste += 8;
+
+      rec.push({
+        title:
+          "API + Subscription Overlap",
+
+        description:
+          "Using both ChatGPT subscriptions and direct OpenAI API access may create duplicated spending.",
+
+        impact: "Medium",
+
+        savings: 25,
       });
     }
 
@@ -156,15 +284,38 @@ export function generateAudit(
       waste += 5;
 
       rec.push({
-        title: `Reduce ${t.name} Seats`,
+        title:
+          `Reduce ${t.name} Seats`,
 
         description:
-          `You are paying for more seats than your team size.`,
+          `You are currently paying for ${t.seats} seats while your team size is only ${teamSize}.`,
 
         impact: "Medium",
 
         savings:
           t.pricePerSeat,
+      });
+    }
+
+    if (
+      t.pricePerSeat > 80
+    ) {
+
+      waste += 5;
+
+      rec.push({
+        title:
+          `Review ${t.name} Pricing`,
+
+        description:
+          `${t.name} has a relatively high monthly cost and should be reviewed for utilization and ROI.`,
+
+        impact: "Low",
+
+        savings: Math.round(
+          t.pricePerSeat *
+            0.1
+        ),
       });
     }
   });
@@ -186,12 +337,46 @@ export function generateAudit(
         "Developer Tool Mismatch",
 
       description:
-        "Cursor is optimized for coding teams, not writing workflows.",
+        "Cursor is optimized primarily for engineering workflows and may not be cost-effective for writing-focused teams.",
 
       impact: "Medium",
 
       savings: Math.round(
-        totalMonthlySpend * 0.08
+        totalMonthlySpend *
+          0.08
+      ),
+    });
+  }
+
+  if (
+    useCase ===
+      "coding" &&
+    tools.some((t) =>
+      t.id.includes(
+        "copilot"
+      )
+    ) &&
+    tools.some((t) =>
+      t.id.includes(
+        "cursor"
+      )
+    )
+  ) {
+
+    waste += 10;
+
+    rec.push({
+      title:
+        "Coding Tool Overlap",
+
+      description:
+        "GitHub Copilot and Cursor provide overlapping coding assistance features for many engineering workflows.",
+
+      impact: "Medium",
+
+      savings: Math.round(
+        totalMonthlySpend *
+          0.1
       ),
     });
   }
@@ -206,12 +391,13 @@ export function generateAudit(
         "Consider Annual Billing",
 
       description:
-        "Annual contracts may reduce costs further.",
+        "Annual contracts or consolidated billing may reduce recurring AI subscription costs.",
 
       impact: "Low",
 
       savings: Math.round(
-        totalMonthlySpend * 0.1
+        totalMonthlySpend *
+          0.1
       ),
     });
   }
@@ -234,21 +420,46 @@ export function generateAudit(
   const optimizationScore =
     100 - waste;
 
-  const summary = `
-Your team spends around $${totalYearlySpend.toLocaleString()} yearly on AI tools.
+  const totalPotentialSavings =
+    rec.reduce(
+      (a, r) =>
+        a +
+        (r.savings || 0),
+      0
+    ) * 12;
 
-We identified opportunities to reduce overlapping subscriptions, optimize seat allocation, and better align tools with your workflow.
+  const summary = `
+Your team currently spends around $${totalYearlySpend.toLocaleString()} yearly on AI tools.
+
+The audit identified approximately $${totalPotentialSavings.toLocaleString()} in possible yearly savings through plan optimization, seat reduction, and removing overlapping subscriptions.
+
+Your current AI spend per employee is $${spendPerEmployee}/month.
+
+${benchmarkMessage}
 `;
 
   return {
     totalMonthlySpend,
+
     totalYearlySpend,
+
     estimatedWasteMonthly,
+
     estimatedWasteYearly,
+
     optimizationScore,
+
     potentialSavingsPercentage:
       waste,
+
+    spendPerEmployee,
+
+    benchmarkMessage,
+
+    totalPotentialSavings,
+
     summary,
+
     recommendations: rec,
   };
 }
