@@ -2,9 +2,9 @@
 
 import {
   CheckCircle2,
-  Share2,
   Download,
 } from "lucide-react";
+import ShareButton from "./ShareButton";
 
 export default function ResultsHeader() {
 
@@ -36,19 +36,11 @@ export default function ResultsHeader() {
 
       <div className="flex gap-3">
 
-        <button className="flex items-center gap-2 px-4 py-3 bg-white/5 border border-white/10 rounded-2xl text-gray-300">
+        <ShareButton />
 
-          <Share2 size={18} />
-
-          Share
-        </button>
-
-        <button className="flex items-center gap-2 px-5 py-3 bg-indigo-600 rounded-2xl font-bold">
-
-          <Download size={18} />
-
-          Export PDF
-        </button>
+        <div className="hidden">
+        <Download size={18} />
+        </div>
       </div>
     </div>
   );
