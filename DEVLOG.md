@@ -62,3 +62,34 @@ Plan for tomorrow:
 - Add benchmark-style insights and better savings explanations
 - Start writing audit engine tests
 - Begin documentation files like PRICING_DATA.md and ARCHITECTURE.md
+
+## Day 3 — 2026-05-09
+
+Hours worked: 8
+What I did:
+* Improved audit and recommendation logic
+* Added benchmark insights and savings metrics
+* Added PDF export and share feature
+* Wrote audit engine tests using Jest
+* Improved results UI and report sections
+* Fixed TypeScript, hydration, and PDF rendering issues
+* Updated documentation and cleaned components
+
+What I learned:
+
+* PDF export in React is tricky with modern CSS
+* Better UI structure improves readability a lot
+* Testing helps catch logic issues early
+
+Blockers:
+
+* PDF formatting still needs improvement
+* Some recommendation logic is still hardcoded
+* Mobile responsiveness needs more polish
+
+Plan for tomorrow:
+
+* Deploy project
+* Improve mobile UI
+* Add email flow and rate limiting
+* Continue polishing documentation

@@ -4,6 +4,8 @@ StackAudit is an AI spend auditing tool built for startups and small teams to an
 
 The project is designed as a lead-generation product for Credex by helping teams understand where they can optimize their AI stack spending.
 
+---
+
 ## Features
 
 - AI tool spend audit
@@ -14,6 +16,15 @@ The project is designed as a lead-generation product for Credex by helping teams
 - Shareable audit result pages
 - Lead capture with Supabase
 - CI/CD pipeline with GitHub Actions
+- Benchmark analysis
+- Spend-per-employee metrics
+- Optimization scoring
+- PDF export support
+- Share/copy audit links
+- Rule-based recommendation engine
+- Audit engine testing with Jest
+
+---
 
 ## Tech Stack
 
@@ -21,7 +32,23 @@ The project is designed as a lead-generation product for Credex by helping teams
 - TypeScript
 - Tailwind CSS
 - Supabase
-- HuggingFace / Gemini APIs
+- HuggingFace 
+- Jest
+- html2canvas
+- jsPDF
+
+---
+
+## Project Structure
+
+- `app/` → Next.js routes and pages
+- `components/` → reusable UI sections
+- `lib/` → audit engine and business logic
+- `hooks/` → custom React hooks
+- `data/` → AI pricing data
+- `types/` → shared TypeScript types
+
+---
 
 ## Local Setup
 
