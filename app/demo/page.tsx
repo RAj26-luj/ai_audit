@@ -1,16 +1,8 @@
 import Results from "@/components/results/Results";
 
-import { supabase } from "@/lib/supabase";
-
 import type {
   AuditResult,
 } from "@/lib/audit";
-
-type Props = {
-  params: Promise<{
-    id: string;
-  }>;
-};
 
 const demoData:
   AuditResult & {
@@ -49,7 +41,8 @@ The largest savings opportunities currently come from consolidating coding assis
   recommendations: [
 
     {
-      id: "reduce-overlap",
+      id:
+        "reduce-overlap",
 
       title:
         "Reduce Tool Overlap",
@@ -57,13 +50,28 @@ The largest savings opportunities currently come from consolidating coding assis
       description:
         "Multiple AI assistants overlap heavily in functionality and create duplicated recurring costs.",
 
-      impact: "High",
+      impact:
+        "High",
 
-      savings: 180,
+      savings:
+        180,
+
+      action: {
+
+        type:
+          "merge_tools",
+
+        tool:
+          "ChatGPT",
+
+        secondaryTool:
+          "Claude",
+      },
     },
 
     {
-      id: "cursor-downgrade",
+      id:
+        "cursor-downgrade",
 
       title:
         "Downgrade Cursor Plan",
@@ -71,13 +79,31 @@ The largest savings opportunities currently come from consolidating coding assis
       description:
         "Cursor Business is likely unnecessary for a small engineering team and can be replaced with Cursor Pro.",
 
-      impact: "High",
+      impact:
+        "High",
 
-      savings: 120,
+      savings:
+        120,
+
+      action: {
+
+        type:
+          "downgrade_plan",
+
+        tool:
+          "Cursor",
+
+        fromPlan:
+          "Business",
+
+        toPlan:
+          "Pro",
+      },
     },
 
     {
-      id: "openai-optimization",
+      id:
+        "openai-optimization",
 
       title:
         "Optimize OpenAI API Usage",
@@ -85,13 +111,16 @@ The largest savings opportunities currently come from consolidating coding assis
       description:
         "OpenAI API usage appears high relative to current team size and may benefit from consolidated usage limits.",
 
-      impact: "Medium",
+      impact:
+        "Medium",
 
-      savings: 70,
+      savings:
+        70,
     },
 
     {
-      id: "reduce-seats",
+      id:
+        "reduce-seats",
 
       title:
         "Reduce Unused Seats",
@@ -99,119 +128,86 @@ The largest savings opportunities currently come from consolidating coding assis
       description:
         "Several subscriptions currently exceed active team allocation requirements.",
 
-      impact: "Medium",
+      impact:
+        "Medium",
 
-      savings: 50,
+      savings:
+        50,
+
+      action: {
+
+        type:
+          "reduce_seats",
+
+        tool:
+          "ChatGPT",
+
+        seatsToRemove:
+          2,
+      },
     },
   ],
 
   tools: [
 
     {
-      id: "cursor",
+      id:
+        "cursor",
 
-      name: "Cursor",
+      name:
+        "Cursor",
 
-      plan: "Business",
+      plan:
+        "Business",
 
-      pricePerSeat: 40,
+      pricePerSeat:
+        40,
 
-      seats: 3,
+      seats:
+        3,
     },
 
     {
-      id: "chatgpt",
+      id:
+        "chatgpt",
 
-      name: "ChatGPT",
+      name:
+        "ChatGPT",
 
-      plan: "Team",
+      plan:
+        "Team",
 
-      pricePerSeat: 25,
+      pricePerSeat:
+        25,
 
-      seats: 4,
+      seats:
+        4,
     },
 
     {
-      id: "openai-api",
+      id:
+        "openai-api",
 
-      name: "OpenAI API",
+      name:
+        "OpenAI API",
 
-      plan: "Pay As You Go",
+      plan:
+        "Pay As You Go",
 
-      pricePerSeat: 60,
+      pricePerSeat:
+        60,
 
-      seats: 1,
+      seats:
+        1,
     },
   ],
 };
 
-export default async function AuditPage({
-  params,
-}: Props) {
-
-  const { id } =
-    await params;
-
-  // demo audit
-  if (id === "demo") {
-
-    return (
-      <Results
-        data={demoData}
-      />
-    );
-  }
-
-  const { data, error } =
-    await supabase
-      .from("audits")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-  if (
-    error ||
-    !data
-  ) {
-
-    return (
-      <div className="min-h-screen bg-[#020205] text-white flex flex-col items-center justify-center px-4 text-center">
-
-        <h1 className="text-5xl font-black tracking-tight">
-
-          Audit Not Found
-
-        </h1>
-
-        <p className="mt-4 text-gray-400 max-w-lg text-lg">
-
-          This audit may have expired,
-          been deleted,
-          or the link may be invalid.
-
-        </p>
-
-        <a
-          href="/"
-          className="mt-8 px-6 py-3 rounded-2xl bg-white text-black font-semibold hover:scale-105 transition-transform"
-        >
-
-          Return Home
-
-        </a>
-
-      </div>
-    );
-  }
-
-  const result = {
-    ...data.result,
-    id,
-  };
+export default function DemoPage() {
 
   return (
     <Results
-      data={result}
+      data={demoData}
     />
   );
 }

@@ -25,6 +25,26 @@ export default function Navbar({
   setStep,
 }: Props) {
 
+  const handleStartAudit = () => {
+
+    localStorage.setItem(
+      "selectedFeature",
+      "audit"
+    );
+
+    setStep("inputs");
+
+    const section = document.getElementById(
+      "audit-form"
+    );
+
+    if (section) {
+      section.scrollIntoView({
+        behavior: "smooth",
+      });
+    }
+  };
+
   return (
     <motion.nav
       initial={{
@@ -53,6 +73,15 @@ export default function Navbar({
         <div className="hidden md:flex items-center gap-10">
 
           <NavLinks />
+
+          <button
+            onClick={handleStartAudit}
+            className="px-5 py-2.5 rounded-xl bg-white text-black font-semibold hover:scale-105 transition-transform"
+          >
+
+            Start Audit
+
+          </button>
 
           <CredexButton />
         </div>

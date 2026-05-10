@@ -7,6 +7,7 @@ export const CREDEX_URL =
   "https://credex.rocks";
 
 export const NAV_ITEMS = [
-  "Pricing Intelligence",
-  "Optimization Flow",
+  "Home",
+  "Features",
+  "Audit",
 ];

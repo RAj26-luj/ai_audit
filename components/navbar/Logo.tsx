@@ -1,3 +1,5 @@
+"use client";
+
 // navbar logo
 
 import { motion } from "framer-motion";
@@ -26,11 +28,30 @@ export default function Logo({
   setStep,
 }: Props) {
 
+  const handleLogoClick = () => {
+
+    localStorage.removeItem(
+      "selectedFeature"
+    );
+
+    setStep("landing");
+
+    const hero =
+      document.getElementById(
+        "hero"
+      );
+
+    if (hero) {
+      hero.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
+
   return (
     <motion.div
-      onClick={() =>
-        setStep("landing")
-      }
+      onClick={handleLogoClick}
 
       whileHover={{
         scale: 1.03,

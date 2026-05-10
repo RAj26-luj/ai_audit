@@ -1,3 +1,5 @@
+"use client";
+
 // hero content
 
 import {
@@ -7,6 +9,7 @@ import {
 import {
   ArrowRight,
   Sparkles,
+  BarChart3,
 } from "lucide-react";
 
 type StepType =
@@ -30,6 +33,21 @@ export default function HeroSection({
   rotateY,
 }: Props) {
 
+  const handleStartAudit = () => {
+
+    localStorage.setItem(
+      "selectedFeature",
+      "audit"
+    );
+
+    setStep("inputs");
+  };
+
+  const handleViewDemo = () => {
+
+    window.location.href = "/audit/demo";
+  };
+
   return (
     <motion.div
       style={{
@@ -41,7 +59,7 @@ export default function HeroSection({
     >
 
       {/* badge */}
-      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 text-indigo-400 mb-10">
+      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-indigo-400 mb-10">
 
         <Sparkles size={14} />
 
@@ -59,32 +77,63 @@ export default function HeroSection({
       </h1>
 
       {/* subtitle */}
-      <p className="text-xl text-gray-400 mt-8 max-w-2xl">
+      <p className="text-xl text-gray-400 mt-8 max-w-2xl leading-relaxed">
 
-        Most startups waste 30% of their AI budget on unused seats and inefficient pricing.
+        Most startups waste 30% of their AI budget on unused seats,
+        overlapping subscriptions, and inefficient pricing plans.
       </p>
 
-      {/* button */}
-      <motion.button
-        whileHover={{
-          scale: 1.05,
-        }}
+      {/* buttons */}
+      <div className="flex flex-col sm:flex-row items-center gap-5 mt-12">
 
-        whileTap={{
-          scale: 0.95,
-        }}
+        {/* main cta */}
+        <motion.button
+          whileHover={{
+            scale: 1.05,
+          }}
 
-        onClick={() =>
-          setStep("inputs")
-        }
+          whileTap={{
+            scale: 0.95,
+          }}
 
-        className="mt-12 px-10 py-5 bg-white text-black rounded-2xl font-black text-xl flex items-center gap-3"
-      >
+          onClick={handleStartAudit}
 
-        Start Free Audit
+          className="px-10 py-5 bg-white text-black rounded-2xl font-black text-xl flex items-center gap-3 shadow-2xl shadow-white/10"
+        >
 
-        <ArrowRight size={24} />
-      </motion.button>
+          Start Free Audit
+
+          <ArrowRight size={24} />
+        </motion.button>
+
+        {/* demo button */}
+        <motion.button
+          whileHover={{
+            scale: 1.03,
+          }}
+
+          whileTap={{
+            scale: 0.97,
+          }}
+
+          onClick={handleViewDemo}
+
+          className="px-8 py-5 rounded-2xl border border-white/10 bg-white/[0.03] text-white font-semibold text-lg flex items-center gap-3 hover:bg-white/[0.05] transition-all"
+        >
+
+          <BarChart3 size={20} />
+
+          View Demo Report
+        </motion.button>
+
+      </div>
+
+      {/* trust text */}
+      <p className="text-sm text-gray-500 mt-6">
+
+        No signup required • Instant audit • Shareable results
+      </p>
+
     </motion.div>
   );
 }

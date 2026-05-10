@@ -3,15 +3,21 @@
 import {
   Share2,
   Check,
+  Link2,
 } from "lucide-react";
 
 import {
   useState,
 } from "react";
 
+import { motion } from "framer-motion";
+
 export default function ShareButton() {
 
   const [copied, setCopied] =
+    useState(false);
+
+  const [sharing, setSharing] =
     useState(false);
 
   const handleShare =
@@ -20,8 +26,11 @@ export default function ShareButton() {
       const url =
         window.location.href;
 
+      setSharing(true);
+
       try {
 
+        // native mobile share
         if (
           navigator.share
         ) {
@@ -31,14 +40,17 @@ export default function ShareButton() {
               "StackAudit Report",
 
             text:
-              "Check this AI optimization report",
+              "Check this AI spend optimization report generated with StackAudit.",
 
             url,
           });
 
+          setSharing(false);
+
           return;
         }
 
+        // clipboard api
         await navigator.clipboard.writeText(
           url
         );
@@ -48,70 +60,111 @@ export default function ShareButton() {
         setTimeout(
           () =>
             setCopied(false),
-          2000
+          2500
         );
 
       } catch {
 
-  try {
+        // fallback copy method
+        try {
 
-    const textArea =
-      document.createElement(
-        "textarea"
-      );
+          const textArea =
+            document.createElement(
+              "textarea"
+            );
 
-    textArea.value =
-      window.location.href;
+          textArea.value =
+            url;
 
-    document.body.appendChild(
-      textArea
-    );
+          document.body.appendChild(
+            textArea
+          );
 
-    textArea.select();
+          textArea.select();
 
-    document.execCommand(
-      "copy"
-    );
+          document.execCommand(
+            "copy"
+          );
 
-    document.body.removeChild(
-      textArea
-    );
+          document.body.removeChild(
+            textArea
+          );
 
-    setCopied(true);
+          setCopied(true);
 
-    setTimeout(
-      () =>
-        setCopied(false),
-      2000
-    );
+          setTimeout(
+            () =>
+              setCopied(false),
+            2500
+          );
 
-  } catch {
+        } catch {
 
-    alert(
-      "Copy failed"
-    );
-  }
-}
+          alert(
+            "Unable to copy report link."
+          );
+        }
+      }
+
+      setSharing(false);
     };
 
   return (
-    <button
+    <motion.button
+
+      whileHover={{
+        scale: 1.03,
+      }}
+
+      whileTap={{
+        scale: 0.97,
+      }}
+
       onClick={handleShare}
-      className="flex items-center gap-2 px-4 py-3 bg-white/5 border border-white/10 rounded-2xl text-gray-300 hover:bg-white/10 hover:border-indigo-500/30 transition"
+
+      className="flex items-center gap-3 px-5 py-3 bg-white/5 border border-white/10 rounded-2xl text-gray-300 hover:bg-white/10 hover:border-indigo-500/30 transition-all backdrop-blur-xl"
     >
 
       {copied ? (
+
         <Check
           size={18}
           className="text-emerald-400"
         />
+
       ) : (
-        <Share2 size={18} />
+
+        <Share2
+          size={18}
+          className={
+            sharing
+              ? "animate-pulse"
+              : ""
+          }
+        />
+
       )}
 
-      {copied
-        ? "Copied!"
-        : "Share Report"}
-    </button>
+      <div className="flex flex-col items-start">
+
+        <span className="font-semibold text-sm">
+
+          {copied
+            ? "Copied!"
+            : "Share Report"}
+
+        </span>
+
+        <span className="text-[11px] text-gray-500 flex items-center gap-1">
+
+          <Link2 size={10} />
+
+          Public audit link
+
+        </span>
+
+      </div>
+
+    </motion.button>
   );
 }

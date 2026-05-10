@@ -1,39 +1,91 @@
+export interface RecommendationAction {
+
+  type:
+    | "remove_tool"
+    | "downgrade_plan"
+    | "reduce_seats"
+    | "merge_tools";
+
+  tool?: string;
+
+  fromPlan?: string;
+
+  toPlan?: string;
+
+  availablePlans?: string[];
+
+  seatsToRemove?: number;
+
+  maxSeatsReducible?: number;
+
+  secondaryTool?: string;
+}
+
 export interface Recommendation {
+
+  id: string;
+
   title: string;
+
   description: string;
-  impact: "High" | "Medium" | "Low";
+
+  impact:
+    | "High"
+    | "Medium"
+    | "Low";
+
   savings?: number;
+
+  action?: RecommendationAction;
+}
+
+export interface ToolSelection {
+
+  id: string;
+
+  name: string;
+
+  plan: string;
+
+  pricePerSeat: number;
+
+  seats: number;
 }
 
 export interface AuditResult {
+
   totalMonthlySpend: number;
+
   totalYearlySpend: number;
 
   estimatedWasteMonthly: number;
+
   estimatedWasteYearly: number;
 
   optimizationScore: number;
+
   potentialSavingsPercentage: number;
 
   spendPerEmployee: number;
+
   benchmarkMessage: string;
+
   totalPotentialSavings: number;
 
   summary: string;
 
-  recommendations: Recommendation[];
-}
+  recommendations:
+    Recommendation[];
 
-export interface ToolSelection {
-  id: string;
-  name: string;
-  plan: string;
-  pricePerSeat: number;
-  seats: number;
+  tools:
+    ToolSelection[];
 }
 
 export interface AuditInput {
-  tools: ToolSelection[];
+
+  tools:
+    ToolSelection[];
+
   teamSize: number;
 
   useCase:
@@ -54,10 +106,10 @@ export function generateAudit(
     useCase,
   } = data;
 
-  let waste = 12;
+  let waste = 0;
 
-  const rec: Recommendation[] =
-    [];
+  const rec:
+    Recommendation[] = [];
 
   const totalMonthlySpend =
     tools.reduce(
@@ -92,12 +144,12 @@ export function generateAudit(
   ) {
 
     benchmarkMessage =
-      "Your AI spend per employee is within a normal startup range.";
+      "Your AI spend per employee is within a healthy startup range.";
 
   } else {
 
     benchmarkMessage =
-      "Your AI spend per employee is higher than average and may indicate overlapping subscriptions or inefficient tool allocation.";
+      "Your AI spend per employee is significantly above average and likely contains optimization opportunities.";
   }
 
   const llmTools =
@@ -113,6 +165,7 @@ export function generateAudit(
       )
     );
 
+  // overlap
   if (
     llmTools.length > 1
   ) {
@@ -120,28 +173,47 @@ export function generateAudit(
     waste += 15;
 
     rec.push({
+
+      id:
+        "reduce-overlap",
+
       title:
         "Reduce Tool Overlap",
 
       description:
         "Multiple general-purpose AI assistants overlap heavily in functionality and may create unnecessary recurring costs.",
 
-      impact: "High",
+      impact:
+        "High",
 
-      savings: Math.round(
-        totalMonthlySpend *
-          0.15
-      ),
+      savings:
+        Math.round(
+          totalMonthlySpend *
+            0.15
+        ),
+
+      action: {
+
+        type:
+          "merge_tools",
+
+        tool:
+          llmTools[0]?.name,
+
+        secondaryTool:
+          llmTools[1]?.name,
+      },
     });
   }
 
   tools.forEach((t) => {
 
+    // Cursor
     if (
-      t.name === "Cursor" &&
+      t.name ===
+        "Cursor" &&
       t.plan ===
-        "Business" &&
-      t.seats <= 2
+        "Business"
     ) {
 
       const save =
@@ -151,23 +223,45 @@ export function generateAudit(
       waste += 15;
 
       rec.push({
+
+        id:
+          `cursor-${t.id}`,
+
         title:
           "Downgrade Cursor Plan",
 
         description:
-          `Cursor Business is likely unnecessary for a ${t.seats}-person team. Cursor Pro can provide similar value at a significantly lower cost.`,
+          `Cursor Business is likely unnecessary for a ${t.seats}-person team.`,
 
-        impact: "High",
+        impact:
+          "High",
 
-        savings: save,
+        savings:
+          save,
+
+        action: {
+
+          type:
+            "downgrade_plan",
+
+          tool:
+            "Cursor",
+
+          fromPlan:
+            "Business",
+
+          toPlan:
+            "Pro",
+        },
       });
     }
 
+    // ChatGPT
     if (
       t.name ===
         "ChatGPT" &&
-      t.plan === "Team" &&
-      t.seats <= 2
+      t.plan ===
+        "Team"
     ) {
 
       const save =
@@ -177,228 +271,103 @@ export function generateAudit(
       waste += 10;
 
       rec.push({
+
+        id:
+          `chatgpt-${t.id}`,
+
         title:
           "Switch ChatGPT Team to Plus",
 
         description:
-          "ChatGPT Team pricing is inefficient for very small teams with limited collaboration needs.",
+          "ChatGPT Team pricing is inefficient for small teams.",
 
-        impact: "Medium",
+        impact:
+          "Medium",
 
-        savings: save,
+        savings:
+          save,
+
+        action: {
+
+          type:
+            "downgrade_plan",
+
+          tool:
+            "ChatGPT",
+
+          fromPlan:
+            "Team",
+
+          toPlan:
+            "Plus",
+        },
       });
     }
 
-    if (
-      t.name === "Claude" &&
-      t.plan === "Max" &&
-      teamSize <= 3
-    ) {
-
-      waste += 10;
-
-      rec.push({
-        title:
-          "Review Claude Max Usage",
-
-        description:
-          "Claude Max is expensive for smaller teams and may be unnecessary unless usage volume is extremely high.",
-
-        impact: "Medium",
-
-        savings: 50,
-      });
-    }
-
-    if (
-      t.name === "v0.dev" &&
-      useCase !== "coding"
-    ) {
-
-      waste += 6;
-
-      rec.push({
-        title:
-          "v0.dev Workflow Mismatch",
-
-        description:
-          "v0.dev is primarily valuable for frontend and engineering workflows.",
-
-        impact: "Low",
-
-        savings: 20,
-      });
-    }
-
-    if (
-      t.name === "GitHub Copilot" &&
-      tools.some(
-        (x) =>
-          x.name === "Cursor"
-      )
-    ) {
-
-      waste += 8;
-
-      rec.push({
-        title:
-          "Coding Assistant Overlap",
-
-        description:
-          "Cursor and GitHub Copilot provide overlapping coding assistance features for many teams.",
-
-        impact: "Medium",
-
-        savings: 15,
-      });
-    }
-
-    if (
-      t.name === "OpenAI API" &&
-      tools.some(
-        (x) =>
-          x.name === "ChatGPT"
-      )
-    ) {
-
-      waste += 8;
-
-      rec.push({
-        title:
-          "API + Subscription Overlap",
-
-        description:
-          "Using both ChatGPT subscriptions and direct OpenAI API access may create duplicated spending.",
-
-        impact: "Medium",
-
-        savings: 25,
-      });
-    }
-
+    // unused seats
     if (
       t.seats >
       teamSize
     ) {
 
+      const removeSeats =
+        t.seats -
+        teamSize;
+
       waste += 5;
 
       rec.push({
+
+        id:
+          `reduce-seats-${t.id}`,
+
         title:
           `Reduce ${t.name} Seats`,
 
         description:
-          `You are currently paying for ${t.seats} seats while your team size is only ${teamSize}.`,
+          `You are paying for ${t.seats} seats while your active team size is ${teamSize}.`,
 
-        impact: "Medium",
+        impact:
+          "Medium",
 
         savings:
+          removeSeats *
           t.pricePerSeat,
-      });
-    }
 
-    if (
-      t.pricePerSeat > 80
-    ) {
+        action: {
 
-      waste += 5;
+          type:
+            "reduce_seats",
 
-      rec.push({
-        title:
-          `Review ${t.name} Pricing`,
+          tool:
+            t.name,
 
-        description:
-          `${t.name} has a relatively high monthly cost and should be reviewed for utilization and ROI.`,
-
-        impact: "Low",
-
-        savings: Math.round(
-          t.pricePerSeat *
-            0.1
-        ),
+          seatsToRemove:
+            removeSeats,
+        },
       });
     }
   });
 
   if (
-    useCase ===
-      "writing" &&
-    tools.some((t) =>
-      t.id.includes(
-        "cursor"
-      )
-    )
-  ) {
-
-    waste += 8;
-
-    rec.push({
-      title:
-        "Developer Tool Mismatch",
-
-      description:
-        "Cursor is optimized primarily for engineering workflows and may not be cost-effective for writing-focused teams.",
-
-      impact: "Medium",
-
-      savings: Math.round(
-        totalMonthlySpend *
-          0.08
-      ),
-    });
-  }
-
-  if (
-    useCase ===
-      "coding" &&
-    tools.some((t) =>
-      t.id.includes(
-        "copilot"
-      )
-    ) &&
-    tools.some((t) =>
-      t.id.includes(
-        "cursor"
-      )
-    )
-  ) {
-
-    waste += 10;
-
-    rec.push({
-      title:
-        "Coding Tool Overlap",
-
-      description:
-        "GitHub Copilot and Cursor provide overlapping coding assistance features for many engineering workflows.",
-
-      impact: "Medium",
-
-      savings: Math.round(
-        totalMonthlySpend *
-          0.1
-      ),
-    });
-  }
-
-  if (
-    totalYearlySpend >
-    5000
+    rec.length === 0
   ) {
 
     rec.push({
+
+      id:
+        "healthy-stack",
+
       title:
-        "Consider Annual Billing",
+        "Efficient AI Stack",
 
       description:
-        "Annual contracts or consolidated billing may reduce recurring AI subscription costs.",
+        "Your current AI tooling configuration appears well optimized.",
 
-      impact: "Low",
+      impact:
+        "Low",
 
-      savings: Math.round(
-        totalMonthlySpend *
-          0.1
-      ),
+      savings: 0,
     });
   }
 
@@ -418,7 +387,10 @@ export function generateAudit(
     12;
 
   const optimizationScore =
-    100 - waste;
+    Math.max(
+      55,
+      100 - waste
+    );
 
   const totalPotentialSavings =
     rec.reduce(
@@ -429,16 +401,13 @@ export function generateAudit(
     ) * 12;
 
   const summary = `
-Your team currently spends around $${totalYearlySpend.toLocaleString()} yearly on AI tools.
+Your team is currently spending approximately $${totalYearlySpend.toLocaleString()} annually across AI subscriptions and infrastructure tools.
 
-The audit identified approximately $${totalPotentialSavings.toLocaleString()} in possible yearly savings through plan optimization, seat reduction, and removing overlapping subscriptions.
-
-Your current AI spend per employee is $${spendPerEmployee}/month.
-
-${benchmarkMessage}
+The audit identified around $${totalPotentialSavings.toLocaleString()} in potential yearly savings through plan optimization, removing overlapping subscriptions, and improving seat allocation efficiency.
 `;
 
   return {
+
     totalMonthlySpend,
 
     totalYearlySpend,
@@ -460,6 +429,9 @@ ${benchmarkMessage}
 
     summary,
 
-    recommendations: rec,
+    recommendations:
+      rec,
+
+    tools,
   };
 }
