@@ -1,9 +1,5 @@
-import type {
-  AuditResult,
-} from "@/lib/audit";
-
 type Props = {
-  data: AuditResult;
+  data: any;
 };
 
 export default function PrintableReport({
@@ -11,6 +7,7 @@ export default function PrintableReport({
 }: Props) {
 
   return (
+
     <div className="bg-white text-black p-12 max-w-5xl mx-auto space-y-10">
 
       {/* HEADER */}
@@ -18,24 +15,32 @@ export default function PrintableReport({
       <div className="border-b pb-8">
 
         <p className="text-sm text-gray-500 mb-3">
+
           StackAudit Report
+
         </p>
 
         <h1 className="text-5xl font-black">
+
           AI Optimization Audit
+
         </h1>
 
         <p className="text-gray-500 mt-4">
+
           Generated on{" "}
+
           {new Intl.DateTimeFormat(
-  "en-GB",
-  {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  }
-).format(new Date())}
+            "en-GB",
+            {
+              day: "2-digit",
+              month: "long",
+              year: "numeric",
+            }
+          ).format(new Date())}
+
         </p>
+
       </div>
 
       {/* TOP STATS */}
@@ -45,25 +50,39 @@ export default function PrintableReport({
         <div className="border rounded-2xl p-6">
 
           <p className="text-gray-500 text-sm">
-            Optimization Score
+
+            Productivity Risk
+
           </p>
 
           <h2 className="text-5xl font-black mt-3">
-            {data.optimizationScore}
+
+            {data.productivityRisk || "Low"}
+
           </h2>
+
         </div>
 
         <div className="border rounded-2xl p-6">
 
           <p className="text-gray-500 text-sm">
-            Estimated Savings
+
+            Estimated Yearly Savings
+
           </p>
 
           <h2 className="text-5xl font-black mt-3">
+
             $
-            {data.estimatedWasteYearly.toLocaleString()}
+
+            {(
+              data.yearlySavings || 0
+            ).toLocaleString()}
+
           </h2>
+
         </div>
+
       </div>
 
       {/* SUMMARY */}
@@ -71,13 +90,18 @@ export default function PrintableReport({
       <section className="space-y-4">
 
         <h2 className="text-3xl font-bold">
+
           Executive Summary
+
         </h2>
 
         <p className="text-lg leading-8 text-gray-700">
 
-          {data.summary}
+          {data.summary ||
+            "AI optimization engine analyzed your stack and identified savings opportunities."}
+
         </p>
+
       </section>
 
       {/* SPEND */}
@@ -85,7 +109,9 @@ export default function PrintableReport({
       <section className="space-y-6">
 
         <h2 className="text-3xl font-bold">
+
           Financial Overview
+
         </h2>
 
         <div className="grid grid-cols-3 gap-5">
@@ -93,42 +119,65 @@ export default function PrintableReport({
           <div className="bg-gray-100 rounded-2xl p-6">
 
             <p className="text-sm text-gray-500">
-              Monthly Spend
+
+              Current Monthly Spend
+
             </p>
 
             <h3 className="text-3xl font-black mt-2">
 
               $
-              {data.totalMonthlySpend}
+
+              {(
+                data.originalSpend || 0
+              ).toLocaleString()}
+
             </h3>
+
           </div>
 
           <div className="bg-gray-100 rounded-2xl p-6">
 
             <p className="text-sm text-gray-500">
-              Yearly Spend
+
+              Optimized Monthly Spend
+
             </p>
 
             <h3 className="text-3xl font-black mt-2">
 
               $
-              {data.totalYearlySpend}
+
+              {(
+                data.optimizedSpend || 0
+              ).toLocaleString()}
+
             </h3>
+
           </div>
 
           <div className="bg-gray-100 rounded-2xl p-6">
 
             <p className="text-sm text-gray-500">
-              Spend Per Employee
+
+              Monthly Savings
+
             </p>
 
             <h3 className="text-3xl font-black mt-2">
 
               $
-              {data.spendPerEmployee}
+
+              {(
+                data.monthlySavings || 0
+              ).toLocaleString()}
+
             </h3>
+
           </div>
+
         </div>
+
       </section>
 
       {/* RECOMMENDATIONS */}
@@ -136,13 +185,18 @@ export default function PrintableReport({
       <section className="space-y-6">
 
         <h2 className="text-3xl font-bold">
+
           Recommendations
+
         </h2>
 
         <div className="space-y-4">
 
-          {data.recommendations.map(
-            (rec, idx) => (
+          {(data.recommendations || []).map(
+            (
+              rec: any,
+              idx: number
+            ) => (
 
               <div
                 key={idx}
@@ -153,30 +207,46 @@ export default function PrintableReport({
 
                   <span className="text-xs font-bold uppercase tracking-wide bg-black text-white px-3 py-2 rounded-full">
 
-                    {rec.impact} Impact
+                    {rec.impact || rec.severity || "Medium"} Impact
+
                   </span>
 
                   {rec.savings && (
+
                     <span className="font-bold text-lg">
 
-                      Save ${rec.savings}/mo
+                      Save $
+
+                      {Math.round(
+                        rec.savings
+                      ).toLocaleString()}
+
+                      /mo
+
                     </span>
+
                   )}
+
                 </div>
 
                 <h3 className="text-2xl font-bold">
 
                   {rec.title}
+
                 </h3>
 
                 <p className="text-gray-600 leading-7 mt-3">
 
                   {rec.description}
+
                 </p>
+
               </div>
             )
           )}
+
         </div>
+
       </section>
 
       {/* FOOTER */}
@@ -184,13 +254,19 @@ export default function PrintableReport({
       <div className="pt-10 border-t text-sm text-gray-500 flex justify-between">
 
         <span>
+
           Generated by StackAudit
+
         </span>
 
         <span>
+
           AI Infrastructure Optimization
+
         </span>
+
       </div>
+
     </div>
   );
 }

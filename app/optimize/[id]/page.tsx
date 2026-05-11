@@ -5,80 +5,27 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import type {
-  AuditResult,
-} from "@/lib/audit";
-
 import { supabase } from "@/lib/supabase";
 
 import InteractiveOptimizer from "@/components/optimization/InteractiveOptimizer";
 
-type Props = {
-  params: Promise<{
-    id: string;
-  }>;
-};
-
-const demoData:
-  AuditResult & {
-    id: string;
-  } = {
+const demoData = {
 
   id: "demo",
 
   totalMonthlySpend: 1240,
 
-  totalYearlySpend: 14880,
+  optimizedSpend: 820,
 
-  estimatedWasteMonthly: 420,
+  monthlySavings: 420,
 
-  estimatedWasteYearly: 5040,
+  yearlySavings: 5040,
 
   optimizationScore: 72,
 
-  potentialSavingsPercentage: 34,
-
-  spendPerEmployee: 103,
-
-  benchmarkMessage:
-    "Your AI spend per employee is significantly above average and likely contains optimization opportunities.",
-
-  totalPotentialSavings: 6240,
-
-  summary: `
-Your engineering and product teams are currently overspending across overlapping AI subscriptions and inefficient pricing plans.
-`,
+  productivityRisk: "Low",
 
   recommendations: [
-
-    {
-      id:
-        "reduce-overlap",
-
-      title:
-        "Reduce Tool Overlap",
-
-      description:
-        "Multiple AI assistants overlap heavily in functionality and create duplicated recurring costs.",
-
-      impact:
-        "High",
-
-      savings:
-        180,
-
-      action: {
-
-        type:
-          "merge_tools",
-
-        tool:
-          "ChatGPT",
-
-        secondaryTool:
-          "Claude",
-      },
-    },
 
     {
       id:
@@ -88,13 +35,16 @@ Your engineering and product teams are currently overspending across overlapping
         "Downgrade Cursor Plan",
 
       description:
-        "Cursor Business is likely unnecessary for a small engineering team and can be replaced with Cursor Pro.",
-
-      impact:
-        "High",
+        "Cursor Business is likely unnecessary for a small engineering team.",
 
       savings:
         120,
+
+      productivityRisk:
+        "Low",
+
+      warning:
+        "Downgrading too aggressively may remove advanced collaboration functionality.",
 
       action: {
 
@@ -104,10 +54,10 @@ Your engineering and product teams are currently overspending across overlapping
         tool:
           "Cursor",
 
-        fromPlan:
+        currentPlan:
           "Business",
 
-        toPlan:
+        recommendedPlan:
           "Pro",
       },
     },
@@ -120,13 +70,16 @@ Your engineering and product teams are currently overspending across overlapping
         "Reduce Unused Seats",
 
       description:
-        "Several subscriptions currently exceed active team allocation requirements.",
-
-      impact:
-        "Medium",
+        "Several subscriptions currently exceed active allocation requirements.",
 
       savings:
         50,
+
+      productivityRisk:
+        "Medium",
+
+      warning:
+        "Reducing too many seats can impact scaling and onboarding.",
 
       action: {
 
@@ -136,7 +89,10 @@ Your engineering and product teams are currently overspending across overlapping
         tool:
           "ChatGPT",
 
-        seatsToRemove:
+        currentSeats:
+          4,
+
+        recommendedSeats:
           2,
       },
     },
@@ -197,6 +153,12 @@ Your engineering and product teams are currently overspending across overlapping
   ],
 };
 
+type Props = {
+  params: Promise<{
+    id: string;
+  }>;
+};
+
 export default async function OptimizePage({
   params,
 }: Props) {
@@ -204,12 +166,8 @@ export default async function OptimizePage({
   const { id } =
     await params;
 
-  let result:
-    AuditResult & {
-      id?: string;
-    };
+  let result: any;
 
-  // demo
   if (id === "demo") {
 
     result =
@@ -248,11 +206,11 @@ export default async function OptimizePage({
   }
 
   return (
+
     <div className="min-h-screen bg-[#020205] text-white px-6 py-12">
 
       <div className="max-w-7xl mx-auto">
 
-        {/* nav */}
         <div className="flex items-center justify-between mb-10">
 
           <Link
@@ -280,34 +238,6 @@ export default async function OptimizePage({
 
         </div>
 
-        {/* hero */}
-        <section className="rounded-3xl border border-white/10 bg-gradient-to-br from-indigo-500/10 to-white/[0.02] p-10">
-
-          <p className="text-indigo-400 uppercase tracking-[0.25em] text-sm font-bold">
-
-            Interactive AI Optimization
-
-          </p>
-
-          <h1 className="mt-5 text-5xl md:text-7xl font-black tracking-tight leading-[0.95]">
-
-            Build Your
-            <br />
-            Optimized AI Stack
-
-          </h1>
-
-          <p className="mt-6 text-lg text-gray-400 max-w-3xl leading-8">
-
-            Enable or ignore recommendations,
-            simulate AI infrastructure optimizations,
-            and dynamically calculate savings in real time.
-
-          </p>
-
-        </section>
-
-        {/* optimizer */}
         <div className="mt-10">
 
           <InteractiveOptimizer
@@ -319,5 +249,6 @@ export default async function OptimizePage({
       </div>
 
     </div>
+
   );
 }

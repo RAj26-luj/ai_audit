@@ -5,15 +5,11 @@ import {
   Briefcase,
 } from "lucide-react";
 
-import type {
-  AuditResult,
-} from "@/lib/audit";
-
 import StatCard from "./StatCard";
 import OptimizationScore from "./OptimizationScore";
 
 type Props = {
-  data: AuditResult;
+  data: any;
 };
 
 export default function StatsGrid({
@@ -21,16 +17,17 @@ export default function StatsGrid({
 }: Props) {
 
   return (
+
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 mb-8">
 
       <StatCard
-        label="Estimated Yearly Waste"
+        label="Yearly Savings"
 
         value={
-          data.estimatedWasteYearly || 0
+          data.yearlySavings || 0
         }
 
-        subtext="Potential yearly savings"
+        subtext="Estimated yearly optimization savings"
 
         icon={TrendingDown}
 
@@ -38,25 +35,25 @@ export default function StatsGrid({
       />
 
       <StatCard
-        label="Monthly Waste"
+        label="Monthly Savings"
 
         value={
-          data.estimatedWasteMonthly || 0
+          data.monthlySavings || 0
         }
 
-        subtext="Recurring monthly inefficiency"
+        subtext="Recurring monthly savings"
 
         icon={BarChart3}
       />
 
       <StatCard
-        label="Potential Savings"
+        label="Optimized Spend"
 
         value={
-          data.totalPotentialSavings || 0
+          data.optimizedSpend || 0
         }
 
-        subtext="Estimated optimization impact"
+        subtext="Optimized monthly AI spend"
 
         icon={DollarSign}
       />
@@ -68,7 +65,7 @@ export default function StatsGrid({
           data.spendPerEmployee || 0
         }
 
-        subtext="Monthly AI spend per team member"
+        subtext="Average AI spend per employee"
 
         icon={Briefcase}
       />
@@ -78,6 +75,7 @@ export default function StatsGrid({
           data.optimizationScore || 0
         }
       />
+
     </div>
   );
 }

@@ -1,41 +1,30 @@
 import Results from "@/components/results/Results";
 
-import type {
-  AuditResult,
-} from "@/lib/audit";
-
-const demoData:
-  AuditResult & {
-    id: string;
-  } = {
+const demoData = {
 
   id: "demo",
 
   totalMonthlySpend: 1240,
 
-  totalYearlySpend: 14880,
+  optimizedSpend: 820,
 
-  estimatedWasteMonthly: 420,
+  monthlySavings: 420,
 
-  estimatedWasteYearly: 5040,
+  yearlySavings: 5040,
 
   optimizationScore: 72,
 
-  potentialSavingsPercentage: 34,
+  productivityRisk: "Low",
 
   spendPerEmployee: 103,
 
   benchmarkMessage:
     "Your AI spend per employee is significantly above average and likely contains optimization opportunities.",
 
-  totalPotentialSavings: 6240,
-
   summary: `
 Your engineering and product teams are currently overspending across overlapping AI subscriptions and inefficient pricing plans.
 
-The audit identified more than $6,000 in potential yearly savings through plan optimization, reducing duplicate tooling, and improving seat allocation efficiency.
-
-The largest savings opportunities currently come from consolidating coding assistants and optimizing enterprise-tier subscriptions.
+The audit identified more than $5,000 in potential yearly savings through plan optimization, reducing duplicate tooling, and improving seat allocation efficiency.
 `,
 
   recommendations: [
@@ -50,23 +39,14 @@ The largest savings opportunities currently come from consolidating coding assis
       description:
         "Multiple AI assistants overlap heavily in functionality and create duplicated recurring costs.",
 
-      impact:
-        "High",
-
       savings:
         180,
 
-      action: {
+      productivityRisk:
+        "Medium",
 
-        type:
-          "merge_tools",
-
-        tool:
-          "ChatGPT",
-
-        secondaryTool:
-          "Claude",
-      },
+      warning:
+        "Removing overlapping tools may reduce workflow flexibility for some teams.",
     },
 
     {
@@ -77,13 +57,16 @@ The largest savings opportunities currently come from consolidating coding assis
         "Downgrade Cursor Plan",
 
       description:
-        "Cursor Business is likely unnecessary for a small engineering team and can be replaced with Cursor Pro.",
-
-      impact:
-        "High",
+        "Cursor Business is likely unnecessary for a small engineering team.",
 
       savings:
         120,
+
+      productivityRisk:
+        "Low",
+
+      warning:
+        "Downgrading too far may remove collaboration functionality.",
 
       action: {
 
@@ -93,29 +76,12 @@ The largest savings opportunities currently come from consolidating coding assis
         tool:
           "Cursor",
 
-        fromPlan:
+        currentPlan:
           "Business",
 
-        toPlan:
+        recommendedPlan:
           "Pro",
       },
-    },
-
-    {
-      id:
-        "openai-optimization",
-
-      title:
-        "Optimize OpenAI API Usage",
-
-      description:
-        "OpenAI API usage appears high relative to current team size and may benefit from consolidated usage limits.",
-
-      impact:
-        "Medium",
-
-      savings:
-        70,
     },
 
     {
@@ -128,11 +94,14 @@ The largest savings opportunities currently come from consolidating coding assis
       description:
         "Several subscriptions currently exceed active team allocation requirements.",
 
-      impact:
-        "Medium",
-
       savings:
         50,
+
+      productivityRisk:
+        "Low",
+
+      warning:
+        "Reducing seats below active usage may affect onboarding and scaling.",
 
       action: {
 
@@ -142,7 +111,10 @@ The largest savings opportunities currently come from consolidating coding assis
         tool:
           "ChatGPT",
 
-        seatsToRemove:
+        currentSeats:
+          4,
+
+        recommendedSeats:
           2,
       },
     },
@@ -207,7 +179,7 @@ export default function DemoPage() {
 
   return (
     <Results
-      data={demoData}
+      data={demoData as any}
     />
   );
 }

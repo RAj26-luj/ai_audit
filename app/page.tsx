@@ -38,7 +38,7 @@ export default function Home() {
   } = useHomeAudit();
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans overflow-hidden">
+    <div className="min-h-screen bg-black text-white font-sans">
 
       {/* navbar */}
       <Navbar

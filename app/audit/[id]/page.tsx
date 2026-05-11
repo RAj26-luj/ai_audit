@@ -1,11 +1,8 @@
+import Link from "next/link";
+
 import Results from "@/components/results/Results";
 
 import { supabase } from "@/lib/supabase";
-import Link from "next/link";
-
-import type {
-  AuditResult,
-} from "@/lib/audit";
 
 type Props = {
   params: Promise<{
@@ -13,44 +10,44 @@ type Props = {
   }>;
 };
 
-const demoData:
-  AuditResult & {
-    id: string;
-  } = {
+// DEMO DATA
+
+const demoData = {
 
   id: "demo",
 
-  totalMonthlySpend: 1240,
+  originalSpend: 1240,
 
-  totalYearlySpend: 14880,
+  optimizedSpend: 820,
 
-  estimatedWasteMonthly: 420,
+  monthlySavings: 420,
 
-  estimatedWasteYearly: 5040,
+  yearlySavings: 5040,
+
+  savingsPercentage: 34,
 
   optimizationScore: 72,
 
-  potentialSavingsPercentage: 34,
+  productivityRisk: "Low",
 
-  spendPerEmployee: 103,
+  warnings: [
 
-  benchmarkMessage:
-    "Your AI spend per employee is significantly above average and likely contains optimization opportunities.",
-
-  totalPotentialSavings: 6240,
+    "ChatGPT and Claude overlap in several workflows.",
+  ],
 
   summary: `
 Your engineering and product teams are currently overspending across overlapping AI subscriptions and inefficient pricing plans.
 
-The audit identified more than $6,000 in potential yearly savings through plan optimization, reducing duplicate tooling, and improving seat allocation efficiency.
+The optimization engine identified major savings opportunities through seat optimization, plan restructuring, and removing duplicate tooling.
 
-The largest savings opportunities currently come from consolidating coding assistants and optimizing enterprise-tier subscriptions.
+The highest recurring waste currently comes from overlapping coding assistants and enterprise-tier subscriptions.
 `,
 
   recommendations: [
 
     {
-      id: "reduce-overlap",
+      id:
+        "reduce-overlap",
 
       title:
         "Reduce Tool Overlap",
@@ -58,90 +55,126 @@ The largest savings opportunities currently come from consolidating coding assis
       description:
         "Multiple AI assistants overlap heavily in functionality and create duplicated recurring costs.",
 
-      impact: "High",
+      impact:
+        "High",
 
-      savings: 180,
+      risk:
+        "Medium",
+
+      current:
+        "ChatGPT + Claude",
+
+      recommended:
+        "ChatGPT Only",
+
+      savings:
+        180,
     },
 
     {
-      id: "cursor-downgrade",
+      id:
+        "cursor-downgrade",
 
       title:
-        "Downgrade Cursor Plan",
+        "Optimize Cursor",
 
       description:
-        "Cursor Business is likely unnecessary for a small engineering team and can be replaced with Cursor Pro.",
+        "Cursor Business is likely unnecessary for your current engineering workflow.",
 
-      impact: "High",
+      impact:
+        "High",
 
-      savings: 120,
+      risk:
+        "Low",
+
+      current:
+        "Business • 3 seats",
+
+      recommended:
+        "Pro • 3 seats",
+
+      savings:
+        120,
     },
 
     {
-      id: "openai-optimization",
-
-      title:
-        "Optimize OpenAI API Usage",
-
-      description:
-        "OpenAI API usage appears high relative to current team size and may benefit from consolidated usage limits.",
-
-      impact: "Medium",
-
-      savings: 70,
-    },
-
-    {
-      id: "reduce-seats",
+      id:
+        "reduce-seats",
 
       title:
         "Reduce Unused Seats",
 
       description:
-        "Several subscriptions currently exceed active team allocation requirements.",
+        "Several subscriptions currently exceed active allocation requirements.",
 
-      impact: "Medium",
+      impact:
+        "Medium",
 
-      savings: 50,
+      risk:
+        "Low",
+
+      current:
+        "6 seats",
+
+      recommended:
+        "4 seats",
+
+      savings:
+        50,
     },
   ],
 
   tools: [
 
     {
-      id: "cursor",
+      id:
+        "cursor",
 
-      name: "Cursor",
+      name:
+        "Cursor",
 
-      plan: "Business",
+      plan:
+        "Business",
 
-      pricePerSeat: 40,
+      pricePerSeat:
+        40,
 
-      seats: 3,
+      seats:
+        3,
     },
 
     {
-      id: "chatgpt",
+      id:
+        "chatgpt",
 
-      name: "ChatGPT",
+      name:
+        "ChatGPT",
 
-      plan: "Team",
+      plan:
+        "Team",
 
-      pricePerSeat: 25,
+      pricePerSeat:
+        25,
 
-      seats: 4,
+      seats:
+        4,
     },
 
     {
-      id: "openai-api",
+      id:
+        "claude",
 
-      name: "OpenAI API",
+      name:
+        "Claude",
 
-      plan: "Pay As You Go",
+      plan:
+        "Max",
 
-      pricePerSeat: 60,
+      pricePerSeat:
+        100,
 
-      seats: 1,
+      seats:
+        1,
     },
   ],
 };
@@ -153,7 +186,8 @@ export default async function AuditPage({
   const { id } =
     await params;
 
-  // demo audit
+  // DEMO PAGE
+
   if (id === "demo") {
 
     return (
@@ -163,12 +197,19 @@ export default async function AuditPage({
     );
   }
 
-  const { data, error } =
+  // DATABASE FETCH
+
+  const {
+    data,
+    error,
+  } =
     await supabase
       .from("audits")
       .select("*")
       .eq("id", id)
       .single();
+
+  // ERROR
 
   if (
     error ||
@@ -176,6 +217,7 @@ export default async function AuditPage({
   ) {
 
     return (
+
       <div className="min-h-screen bg-[#020205] text-white flex flex-col items-center justify-center px-4 text-center">
 
         <h1 className="text-5xl font-black tracking-tight">
@@ -184,7 +226,7 @@ export default async function AuditPage({
 
         </h1>
 
-        <p className="mt-4 text-gray-400 max-w-lg text-lg">
+        <p className="mt-4 text-gray-400 max-w-lg text-lg leading-8">
 
           This audit may have expired,
           been deleted,
@@ -193,19 +235,96 @@ export default async function AuditPage({
         </p>
 
         <Link
-  href="/"
-  className="mt-8 px-6 py-3 rounded-2xl bg-white text-black font-semibold hover:scale-105 transition-transform"
->
-  Return Home
-</Link>
+          href="/"
+
+          className="mt-8 px-6 py-3 rounded-2xl bg-white text-black font-semibold hover:scale-105 transition-transform"
+        >
+
+          Return Home
+
+        </Link>
 
       </div>
     );
   }
 
+  // NORMALIZE DB DATA
+
   const result = {
-    ...data.result,
+
     id,
+
+    originalSpend:
+      data.result
+        ?.originalSpend ||
+
+      data.result
+        ?.totalMonthlySpend ||
+
+      0,
+
+    optimizedSpend:
+      data.result
+        ?.optimizedSpend ||
+
+      0,
+
+    monthlySavings:
+      data.result
+        ?.monthlySavings ||
+
+      data.result
+        ?.estimatedWasteMonthly ||
+
+      0,
+
+    yearlySavings:
+      data.result
+        ?.yearlySavings ||
+
+      data.result
+        ?.estimatedWasteYearly ||
+
+      0,
+
+    savingsPercentage:
+      data.result
+        ?.savingsPercentage ||
+
+      data.result
+        ?.potentialSavingsPercentage ||
+
+      0,
+
+    optimizationScore:
+      data.result
+        ?.optimizationScore ||
+
+      70,
+
+    productivityRisk:
+      data.result
+        ?.productivityRisk ||
+
+      "Low",
+
+    warnings:
+      data.result
+        ?.warnings || [],
+
+    summary:
+      data.result
+        ?.summary ||
+
+      "AI optimization analysis completed.",
+
+    recommendations:
+      data.result
+        ?.recommendations || [],
+
+    tools:
+      data.result
+        ?.tools || [],
   };
 
   return (

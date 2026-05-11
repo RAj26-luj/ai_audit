@@ -4,6 +4,7 @@ import {
   ShieldCheck,
   ChevronRight,
   ArrowRight,
+  AlertTriangle,
 } from "lucide-react";
 
 import { motion } from "framer-motion";
@@ -15,13 +16,9 @@ import {
 
 import { useRouter } from "next/navigation";
 
-import type {
-  Recommendation,
-} from "@/lib/audit";
-
 type Props = {
   savings: number;
-  recommendations: Recommendation[];
+  recommendations: any[];
   auditId: string;
 };
 
@@ -41,126 +38,47 @@ export default function OptimizationCTA({
     useMemo(() => {
 
       const r =
-        recommendations[0];
+        recommendations?.[0];
 
       if (!r) {
 
         return {
+
           current:
-            "Current AI stack",
+            "Current AI Stack",
 
           recommended:
-            "Optimized AI stack",
+            "Optimized AI Stack",
 
           reason:
-            "Your stack can be optimized for lower recurring costs.",
-        };
-      }
-
-      if (
-        r.title.includes(
-          "Cursor"
-        )
-      ) {
-
-        return {
-          current:
-            "Cursor Business",
-
-          recommended:
-            "Cursor Pro",
-
-          reason:
-            "Reduce unnecessary enterprise plan overhead.",
-        };
-      }
-
-      if (
-        r.title.includes(
-          "ChatGPT"
-        )
-      ) {
-
-        return {
-          current:
-            "ChatGPT Team",
-
-          recommended:
-            "ChatGPT Plus",
-
-          reason:
-            "Collaboration features appear underutilized.",
-        };
-      }
-
-      if (
-        r.title.includes(
-          "Claude"
-        )
-      ) {
-
-        return {
-          current:
-            "Claude Max",
-
-          recommended:
-            "Claude Pro",
-
-          reason:
-            "Current usage does not justify higher tier pricing.",
-        };
-      }
-
-      if (
-        r.title.includes(
-          "Seat"
-        )
-      ) {
-
-        return {
-          current:
-            "Unused subscriptions",
-
-          recommended:
-            "Reduced seat allocation",
-
-          reason:
-            "Inactive seats are increasing recurring spend.",
-        };
-      }
-
-      if (
-        r.title.includes(
-          "Overlap"
-        )
-      ) {
-
-        return {
-          current:
-            "Overlapping AI tools",
-
-          recommended:
-            "Consolidated stack",
-
-          reason:
-            "Multiple tools provide similar functionality.",
+            "The optimization engine identified additional savings opportunities.",
         };
       }
 
       return {
+
         current:
-          r.title,
+          r.current || "Current Stack",
 
         recommended:
-          "Optimized pricing",
+          r.recommended || "Optimized Stack",
 
         reason:
-          r.description,
+          r.description ||
+          "AI optimization recommendation generated dynamically.",
       };
 
     }, [recommendations]);
 
+  const risk =
+    savings > 60
+      ? "High"
+      : savings > 35
+      ? "Medium"
+      : "Low";
+
   return (
+
     <motion.section
 
       initial={{
@@ -181,6 +99,7 @@ export default function OptimizationCTA({
     >
 
       {/* top */}
+
       <div className="flex items-start gap-4">
 
         <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0">
@@ -211,15 +130,18 @@ export default function OptimizationCTA({
       </div>
 
       {/* desc */}
+
       <p className="mt-5 text-sm text-gray-400 leading-7">
 
-        Analyze subscription overlap,
-        optimize plan allocation,
-        and reduce recurring AI infrastructure costs.
+        Dynamic optimization recalculates your entire AI stack
+        every time you change seats,
+        plans,
+        or subscriptions.
 
       </p>
 
       {/* savings */}
+
       <div className="mt-6 rounded-2xl border border-white/5 bg-black/20 p-5">
 
         <div className="flex items-center justify-between">
@@ -228,7 +150,7 @@ export default function OptimizationCTA({
 
             <p className="text-xs uppercase tracking-wider text-gray-500">
 
-              Optimization Potential
+              Estimated Savings
 
             </p>
 
@@ -236,13 +158,16 @@ export default function OptimizationCTA({
 
               <span className="text-5xl font-black text-white leading-none">
 
-                {savings || 0}
+                $
+                {Math.round(
+                  savings || 0
+                ).toLocaleString()}
 
               </span>
 
               <span className="text-xl text-gray-400 mb-1">
 
-                %
+                /mo
 
               </span>
 
@@ -250,17 +175,15 @@ export default function OptimizationCTA({
 
           </div>
 
-          <div className="w-28 h-2 rounded-full bg-white/10 overflow-hidden">
+          <div className={`px-4 py-2 rounded-2xl text-sm font-semibold border ${
+            risk === "High"
+              ? "bg-red-500/10 border-red-500/20 text-red-300"
+              : risk === "Medium"
+              ? "bg-amber-500/10 border-amber-500/20 text-amber-300"
+              : "bg-emerald-500/10 border-emerald-500/20 text-emerald-300"
+          }`}>
 
-            <div
-              className="h-full rounded-full bg-indigo-500"
-              style={{
-                width: `${Math.min(
-                  savings,
-                  100
-                )}%`,
-              }}
-            />
+            {risk} Risk
 
           </div>
 
@@ -268,7 +191,34 @@ export default function OptimizationCTA({
 
       </div>
 
+      {/* warning */}
+
+      {risk === "High" && (
+
+        <div className="mt-5 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4">
+
+          <div className="flex items-start gap-3">
+
+            <AlertTriangle
+              size={18}
+              className="text-amber-300 mt-0.5"
+            />
+
+            <p className="text-sm text-amber-100/80 leading-7">
+
+              Aggressive optimization may reduce productivity,
+              AI usage limits,
+              or collaboration workflows.
+
+            </p>
+
+          </div>
+
+        </div>
+      )}
+
       {/* preview */}
+
       {showPlan && (
 
         <motion.div
@@ -353,6 +303,7 @@ export default function OptimizationCTA({
       )}
 
       {/* toggle */}
+
       <button
 
         onClick={() =>

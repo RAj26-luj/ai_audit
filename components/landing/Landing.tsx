@@ -43,7 +43,7 @@ export default function Landing({
       ref={containerRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative min-h-screen overflow-hidden bg-[#020205]"
+      className="relative min-h-screen overflow-x-hidden bg-[#020205]"
     >
 
       {/* background visuals */}

@@ -1,9 +1,6 @@
 "use client";
 
-// main audit logic
-
 import {
-  useEffect,
   useState,
 } from "react";
 
@@ -12,39 +9,43 @@ import {
 } from "next/navigation";
 
 import {
-  generateAudit,
-  AuditResult,
-  ToolSelection,
-} from "@/lib/audit";
+  supabase,
+} from "@/lib/supabase";
 
 import {
   TOOLS_CONFIG,
 } from "@/data/tools";
 
 import {
-  supabase,
-} from "@/lib/supabase";
+  generateAISummary,
+} from "@/lib/ai-summary";
 
 import type {
   StepType,
   FormDataType,
 } from "@/types/home";
-import {
-  generateAISummary,
-} from "@/lib/ai-summary";
+
 export function useHomeAudit() {
 
   const router =
     useRouter();
 
-  // step
-  const [step, setStep] =
+  // STEP
+
+  const [
+    step,
+    setStep,
+  ] =
     useState<StepType>(
       "landing"
     );
 
-  // form
-  const [formData, setFormData] =
+  // FORM
+
+  const [
+    formData,
+    setFormData,
+  ] =
     useState<FormDataType>({
       selectedTools: [],
       toolDetails: {},
@@ -52,183 +53,218 @@ export function useHomeAudit() {
       useCase: "coding",
     });
 
-  // result
+  // RESULT
+
   const [
     auditResult,
     setAuditResult,
   ] =
-    useState<AuditResult | null>(
+    useState<any>(
       null
     );
 
-  // modal
+  // LEAD MODAL
+
   const [
     showLeadModal,
     setShowLeadModal,
-  ] = useState(false);
+  ] =
+    useState(false);
 
-  // id
-  const [auditId, setAuditId] =
-    useState("");
+  // TEMP AUDIT ID
 
-  // restore
-  useEffect(() => {
-
-    const saved =
-      localStorage.getItem(
-        "audit-form"
-      );
-
-    if (saved) {
-
-      setFormData(
-        JSON.parse(saved)
-      );
-    }
-
-  }, []);
-
-  // save
-  useEffect(() => {
-
-    localStorage.setItem(
-      "audit-form",
-      JSON.stringify(
-        formData
-      )
+  const [
+    auditId,
+  ] =
+    useState(
+      crypto.randomUUID()
     );
 
-  }, [formData]);
+  // MAIN AUDIT
 
-  // run audit
-const startAudit =
-  async () => {
+  const startAudit =
+    async () => {
 
-    setStep("loading");
+      try {
 
-    const tools: ToolSelection[] =
-      formData.selectedTools.map(
-        (toolId) => {
+        setStep(
+          "loading"
+        );
 
-          const config =
-            TOOLS_CONFIG.find(
-              (t) =>
-                t.id === toolId
-            );
+        // BUILD STACK
 
-          const details =
-            formData.toolDetails[
-              toolId
-            ];
+        const tools =
+          formData.selectedTools.map(
+            (toolId) => {
 
-          return {
-            id: toolId,
+              const config =
+                TOOLS_CONFIG.find(
+                  (t) =>
+                    t.id ===
+                    toolId
+                );
 
-            name:
-              config?.name ||
-              toolId,
+              const details =
+                formData.toolDetails[
+                  toolId
+                ];
 
-            plan:
-              details?.plan ||
-              "Pro",
+              return {
 
-            pricePerSeat:
-              details?.monthlySpend ||
-              20,
+                id:
+                  toolId,
 
-            seats:
-              details?.seats ||
-              1,
-          };
-        }
-      );
+                name:
+                  config?.name ||
+                  toolId,
 
-    // generate
-    const result =
-      generateAudit({
-        tools,
-        teamSize:
-          formData.teamSize,
-        useCase:
-          formData.useCase,
-      });
+                plan:
+                  details?.plan ||
+                  "Pro",
 
-    // ai summary
-    const aiSummary =
-      await generateAISummary({
-        yearlySpend:
-          result.totalYearlySpend,
+                pricePerSeat:
+                  details?.monthlySpend ||
+                  20,
 
-        waste:
-          result.potentialSavingsPercentage,
+                seats:
+                  details?.seats ||
+                  1,
+              };
+            }
+          );
 
-        recommendations:
-          result.recommendations,
-      });
+        // FULL STACK PAYLOAD
 
-    result.summary =
-      aiSummary;
+        const payload = {
 
-    // save
-    const {
-      data: savedAudit,
-      error,
-    } = await supabase
-      .from("audits")
-      .insert([
-        {
+          stack:
+            tools,
+
+          originalStack:
+            tools,
+
+          teamSize:
+            formData.teamSize,
+
+          useCase:
+            formData.useCase,
+        };
+
+        // API ENGINE
+
+        const res =
+          await fetch(
+            "/api/optimize",
+            {
+
+              method:
+                "POST",
+
+              headers: {
+
+                "Content-Type":
+                  "application/json",
+              },
+
+              body:
+                JSON.stringify(
+                  payload
+                ),
+            }
+          );
+
+        const result =
+          await res.json();
+
+        // AI SUMMARY ONLY
+
+        const summary =
+          await generateAISummary({
+
+            yearlySpend:
+              result.yearlySavings ||
+              0,
+
+            waste:
+              result.savingsPercentage ||
+              0,
+
+            recommendations:
+              result.recommendations ||
+              [],
+          });
+
+        // FINAL RESULT
+
+        const finalResult = {
+
+          id:
+            auditId,
+
+          ...result,
+
+          summary,
+
           tools,
-          result,
-        },
-      ])
-      .select()
-      .single();
+        };
 
-    // fallback
-    if (error) {
+        // SAVE RESULT LOCALLY
 
-      console.error(error);
+        setAuditResult(
+          finalResult
+        );
 
-      setAuditResult(
-        result
-      );
+        // SAVE AUDIT IN DB
 
-      setStep("results");
+        await supabase
+          .from("audits")
+          .insert([
+            {
+              id:
+                auditId,
 
-      setShowLeadModal(
-        true
-      );
+              result:
+                finalResult,
+            },
+          ]);
 
-      return;
-    }
+        // SHOW RESULTS
 
-    setAuditId(
-      savedAudit.id
-    );
+        setTimeout(() => {
 
-    setTimeout(() => {
+          setStep(
+            "results"
+          );
 
-      setAuditResult(
-        result
-      );
+          setShowLeadModal(
+            true
+          );
 
-      setStep("results");
+        }, 1800);
 
-      setShowLeadModal(
-        true
-      );
+      } catch (err) {
 
-    }, 2500);
-  };
+        console.error(
+          err
+        );
 
-  // lead submit
-const submitLead =
-  async (leadData: {
-    email: string;
-    company: string;
-    role: string;
-    teamSize: number;
-  }) => {
+        setStep(
+          "inputs"
+        );
+      }
+    };
+
+  // SAVE ONLY LEAD INFO
+
+  const submitLead =
+    async (
+      leadData: {
+        email: string;
+        company: string;
+        role: string;
+        teamSize: number;
+      }
+    ) => {
 
       try {
 
@@ -238,6 +274,7 @@ const submitLead =
           .from("leads")
           .insert([
             {
+
               email:
                 leadData.email,
 
@@ -256,12 +293,17 @@ const submitLead =
           ]);
 
         if (error) {
-          console.error(error);
+
+          console.error(
+            error
+          );
         }
 
         setShowLeadModal(
           false
         );
+
+        // GO TO AUDIT PAGE
 
         router.push(
           `/audit/${auditId}`
@@ -269,7 +311,9 @@ const submitLead =
 
       } catch (err) {
 
-        console.error(err);
+        console.error(
+          err
+        );
 
         setShowLeadModal(
           false
@@ -278,6 +322,7 @@ const submitLead =
     };
 
   return {
+
     step,
     setStep,
 
