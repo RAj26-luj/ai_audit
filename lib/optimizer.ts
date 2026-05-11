@@ -53,12 +53,7 @@ export function generateOptimizedStack(
         t.name === "Cursor"
     );
 
-  const hasCopilot =
-    tools.some(
-      (t) =>
-        t.name ===
-        "GitHub Copilot"
-    );
+
 
   tools.forEach((tool) => {
 

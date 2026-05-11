@@ -100,11 +100,10 @@ export function generateAudit(
   data: AuditInput
 ): AuditResult {
 
-  const {
-    tools,
-    teamSize,
-    useCase,
-  } = data;
+const {
+  tools,
+  teamSize,
+} = data;
 
   let waste = 0;
 

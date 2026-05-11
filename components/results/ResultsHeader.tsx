@@ -4,7 +4,6 @@
 
 import {
   CheckCircle2,
-  ArrowLeft,
   Sparkles,
   Home,
 } from "lucide-react";
