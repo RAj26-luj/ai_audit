@@ -93,3 +93,34 @@ Plan for tomorrow:
 * Improve mobile UI
 * Add email flow and rate limiting
 * Continue polishing documentation
+
+## Day 4 — 2026-05-10
+
+**Hours worked:** 7
+
+**What I did:**
+- Improved optimization dashboard UI
+- Added live savings updates for seat and plan changes
+- Redesigned seat reduction controls
+- Added summary cards and PDF export
+- Fixed TypeScript type issues and recommendation logic bugs
+- Improved optimization calculations and responsiveness
+- Cleaned components and state handling
+- Used ChatGPT for debugging and React/TypeScript help
+
+**What I learned:**
+- Managing derived state in React is tricky
+- TypeScript consistency is important across components
+- Real-time financial calculations need careful state updates
+- Print/PDF layouts need separate styling
+
+**Blockers / what I'm stuck on:**
+- PDF layout still needs improvement
+- Some mobile UI sections need polishing
+- Need better benchmarking and OG preview support
+
+**Plan for tomorrow:**
+- Improve PDF export styling
+- Add transactional email flow
+- Improve mobile responsiveness
+- Add more tests and documentation

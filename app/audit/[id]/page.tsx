@@ -1,6 +1,7 @@
 import Results from "@/components/results/Results";
 
 import { supabase } from "@/lib/supabase";
+import Link from "next/link";
 
 import type {
   AuditResult,
@@ -191,14 +192,12 @@ export default async function AuditPage({
 
         </p>
 
-        <a
-          href="/"
-          className="mt-8 px-6 py-3 rounded-2xl bg-white text-black font-semibold hover:scale-105 transition-transform"
-        >
-
-          Return Home
-
-        </a>
+        <Link
+  href="/"
+  className="mt-8 px-6 py-3 rounded-2xl bg-white text-black font-semibold hover:scale-105 transition-transform"
+>
+  Return Home
+</Link>
 
       </div>
     );
