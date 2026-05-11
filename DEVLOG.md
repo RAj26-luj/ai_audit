@@ -124,3 +124,34 @@ Plan for tomorrow:
 - Add transactional email flow
 - Improve mobile responsiveness
 - Add more tests and documentation
+
+## Day 5 — 2026-05-11
+
+Hours worked: 8
+
+What I did:
+- Reworked optimization flow into a fully API-driven system
+- Added live recalculation for savings, stack, recommendations, and productivity risk
+- Fixed recommendation toggle and reset behavior
+- Improved optimization scoring and state management
+- Redesigned PDF export layout
+- Fixed TypeScript, ESLint, and runtime issues
+- Improved dashboard responsiveness
+- Used ChatGPT for debugging and architecture help
+
+What I learned:
+- API-driven state handling is cleaner for dynamic dashboards
+- React state synchronization is important for live recalculations
+- Defensive checks prevent runtime crashes
+- PDF exports need dedicated rendering logic
+
+Blockers:
+- Optimization engine still partially rule-based
+- PDF pagination needs improvement
+- Some mobile UI polish remains
+
+Plan for tomorrow:
+- Improve optimization intelligence
+- Refine PDF export
+- Improve mobile responsiveness
+- Add more testing and documentation
