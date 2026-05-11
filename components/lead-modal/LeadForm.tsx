@@ -88,18 +88,26 @@ export default function LeadForm({
           }
         />
 
-        <FormInput
-          label="Team Size"
-          icon={<Users size={14} />}
-          type="number"
-          placeholder="10"
-          value={teamSize}
-          onChange={(e) =>
-            setTeamSize(
-              Number(e.target.value)
-            )
-          }
-        />
+       <FormInput
+  label="Team Size"
+  icon={<Users size={14} />}
+  type="number"
+  placeholder="10"
+  value={
+    teamSize === 0
+      ? ""
+      : teamSize
+  }
+  onChange={(e) =>
+    setTeamSize(
+      e.target.value === ""
+        ? 0
+        : Number(
+            e.target.value
+          )
+    )
+  }
+/>
 
         <SubmitButton
           loading={loading}

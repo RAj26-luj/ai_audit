@@ -10,10 +10,20 @@ import SuccessMessage from "./SuccessMessage";
 
 import { useLeadForm } from "./hooks/useLeadForm";
 
+import type {
+  FormDataType,
+} from "@/types/audit";
+
 type Props = {
   open: boolean;
 
   onClose: () => void;
+
+  formData: FormDataType;
+
+  setFormData: React.Dispatch<
+    React.SetStateAction<FormDataType>
+  >;
 
   onSubmit: (data: {
     email: string;
@@ -27,6 +37,8 @@ export default function LeadCaptureModal({
   open,
   onClose,
   onSubmit,
+  formData,
+  setFormData,
 }: Props) {
 
   const {
@@ -39,9 +51,6 @@ export default function LeadCaptureModal({
     role,
     setRole,
 
-    teamSize,
-    setTeamSize,
-
     loading,
     success,
 
@@ -52,6 +61,7 @@ export default function LeadCaptureModal({
   );
 
   return (
+
     <AnimatePresence>
 
       {open && (
@@ -70,8 +80,21 @@ export default function LeadCaptureModal({
               role={role}
               setRole={setRole}
 
-              teamSize={teamSize}
-              setTeamSize={setTeamSize}
+              teamSize={
+                formData.teamSize
+              }
+
+              setTeamSize={(
+                value: number
+              ) =>
+                setFormData(
+                  (prev) => ({
+                    ...prev,
+                    teamSize:
+                      value,
+                  })
+                )
+              }
 
               loading={loading}
 
@@ -81,9 +104,13 @@ export default function LeadCaptureModal({
           ) : (
 
             <SuccessMessage />
+
           )}
+
         </ModalWrapper>
+
       )}
+
     </AnimatePresence>
   );
 }

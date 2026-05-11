@@ -23,24 +23,40 @@ export default function ToolSeatsInput({
       />
 
       <input
-        type="number"
+  type="number"
+  min="1"
+  step="1"
+  value={
+    details.seats === 0
+      ? ""
+      : details.seats
+  }
+  onChange={(e) => {
 
-        min="1"
+    const v =
+      e.target.value;
 
-        value={details.seats || 1}
+    updateDetail(
+      tool.id,
+      "seats",
+      v === ""
+        ? 0
+        : Number(v)
+    );
+  }}
+  onKeyDown={(e) => {
 
-        onChange={(e) =>
-          updateDetail(
-            tool.id,
-            "seats",
-            parseInt(
-              e.target.value
-            )
-          )
-        }
+    if (
+      e.key === "-" ||
+      e.key === "+" ||
+      e.key === "e"
+    ) {
 
-        className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-indigo-500"
-      />
+      e.preventDefault();
+    }
+  }}
+  className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-indigo-500"
+/>
     </div>
   );
 }

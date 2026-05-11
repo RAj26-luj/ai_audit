@@ -83,19 +83,25 @@ export default function Home() {
       )}
 
       {/* modal */}
-      <LeadCaptureModal
-        open={showLeadModal}
+     <LeadCaptureModal
+  open={showLeadModal}
 
-        onClose={() =>
-          setShowLeadModal(
-            false
-          )
-        }
+  onClose={() =>
+    setShowLeadModal(
+      false
+    )
+  }
 
-        onSubmit={
-          submitLead
-        }
-      />
+  onSubmit={
+    submitLead
+  }
+
+  formData={formData}
+
+  setFormData={
+    setFormData
+  }
+/>
 
       {/* glow */}
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none -z-10" />

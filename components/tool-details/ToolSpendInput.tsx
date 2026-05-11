@@ -22,25 +22,63 @@ export default function ToolSpendInput({
         text="Monthly Spend"
       />
 
-      <input
-        type="number"
+<input
+  type="number"
+  min="0"
+  step="1"
+  value={
+    details.monthlySpend === 0 ||
+    Number.isNaN(
+      details.monthlySpend
+    )
+      ? ""
+      : details.monthlySpend
+  }
+  onChange={(e) => {
 
-        min="0"
+    const v =
+      e.target.value;
 
-        value={details.monthlySpend}
+    if (
+      v === ""
+    ) {
 
-        onChange={(e) =>
-          updateDetail(
-            tool.id,
-            "monthlySpend",
-            parseInt(
-              e.target.value
-            )
-          )
-        }
+      updateDetail(
+        tool.id,
+        "monthlySpend",
+        0
+      );
 
-        className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-indigo-500"
-      />
+      return;
+    }
+
+    const n =
+      parseInt(v);
+
+    if (
+      n >= 0
+    ) {
+
+      updateDetail(
+        tool.id,
+        "monthlySpend",
+        n
+      );
+    }
+  }}
+  onKeyDown={(e) => {
+
+    if (
+      e.key === "-" ||
+      e.key === "e" ||
+      e.key === "+"
+    ) {
+
+      e.preventDefault();
+    }
+  }}
+  className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-indigo-500"
+/>
     </div>
   );
 }

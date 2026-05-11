@@ -56,16 +56,12 @@ export default function EditableToolCard({
   onToolChange,
 }: Props) {
 
-  // CURRENT TOOL CONFIG
-
   const currentTool =
     TOOLS_CONFIG.find(
       (t) =>
         t.name ===
         tool.name
     );
-
-  // RECOMMENDATION WARNING
 
   const showWarning =
     recommendedTool &&
@@ -80,8 +76,6 @@ export default function EditableToolCard({
           ?.plan
     );
 
-  // TOTAL COST
-
   const totalCost =
     (
       tool.pricePerSeat || 0
@@ -89,6 +83,10 @@ export default function EditableToolCard({
     (
       tool.seats || 0
     );
+
+  const seatError =
+    !tool.seats ||
+    tool.seats <= 0;
 
   return (
 
@@ -186,8 +184,6 @@ export default function EditableToolCard({
                   defaultPlan
                 ] || 0;
 
-              // SEND FULL NEW TOOL DATA
-
               onToolChange(
                 selected.name,
                 defaultPlan,
@@ -240,8 +236,6 @@ export default function EditableToolCard({
                     plan
                   ] || 0;
 
-              // SEND NEW PLAN + PRICE
-
               onPlanChange(
                 plan,
                 price
@@ -292,30 +286,68 @@ export default function EditableToolCard({
               min={1}
 
               value={
-                tool.seats || 1
+                tool.seats === 0
+                  ? ""
+                  : tool.seats
               }
 
               onChange={(e) => {
 
-                const value =
-                  Math.max(
-                    1,
-                    Number(
-                      e.target.value
-                    ) || 1
-                  );
-
-                // SEND FULL STACK UPDATE
+                const v =
+                  e.target.value;
 
                 onSeatsChange(
-                  value
+                  v === ""
+                    ? 0
+                    : Math.max(
+                        1,
+                        Number(v)
+                      )
                 );
               }}
 
-              className="w-full rounded-xl bg-slate-950 border border-slate-700 pl-8 pr-2 py-2 text-xs text-white outline-none focus:border-indigo-500/40 focus:ring-2 focus:ring-indigo-500/10"
+              onBlur={() => {
+
+                if (
+                  !tool.seats ||
+                  tool.seats <= 0
+                ) {
+
+                  onSeatsChange(1);
+                }
+              }}
+
+              onKeyDown={(e) => {
+
+                if (
+                  e.key === "-" ||
+                  e.key === "+" ||
+                  e.key === "e"
+                ) {
+
+                  e.preventDefault();
+                }
+              }}
+
+              className={`w-full rounded-xl bg-slate-950 pl-8 pr-2 py-2 text-xs text-white outline-none focus:ring-2
+              ${
+                seatError
+                  ? "border border-red-500 focus:border-red-500 focus:ring-red-500/20"
+                  : "border border-slate-700 focus:border-indigo-500/40 focus:ring-indigo-500/10"
+              }`}
             />
 
           </div>
+
+          {seatError && (
+
+            <p className="text-[11px] text-red-400 mt-1">
+
+              Seats cannot be empty
+
+            </p>
+
+          )}
 
         </div>
 

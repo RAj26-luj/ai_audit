@@ -16,7 +16,7 @@ export async function POST(
     const stack =
       body.stack || [];
 
-    const enabledRecommendations =
+    let enabledRecommendations =
       body.enabledRecommendations || [];
 
     // ORIGINAL USER STACK
@@ -312,7 +312,18 @@ export async function POST(
         },
       });
     }
+    // AUTO ENABLE ALL RECOMMENDATIONS
+// FOR INITIAL AUDIT
 
+if (
+  enabledRecommendations.length === 0
+) {
+
+  enabledRecommendations =
+    recommendations.map(
+      (r: any) => r.id
+    );
+}
     // =========================
     // APPLY ENABLED RECOMMENDATIONS
     // =========================

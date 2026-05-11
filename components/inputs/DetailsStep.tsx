@@ -1,5 +1,12 @@
 // second screen for details
-import { motion } from "framer-motion";
+
+import {
+  motion,
+} from "framer-motion";
+
+import {
+  useState,
+} from "react";
 
 import SectionHeader from "../section-header/SectionHeader";
 import ToolDetailsCard from "../tool-details/ToolDetailsCard";
@@ -40,7 +47,13 @@ export default function DetailsStep({
   goBack,
 }: Props) {
 
+  const [
+    error,
+    setError,
+  ] = useState("");
+
   return (
+
     <motion.div>
 
       <BackButton goBack={goBack} />
@@ -67,39 +80,69 @@ export default function DetailsStep({
               updateDetail
             }
           />
+
         ))}
 
         <div className="grid md:grid-cols-2 gap-4 bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
 
+          {/* TEAM SIZE */}
+
           <div>
+
             <label className="text-sm text-zinc-400 block mb-2">
+
               Team Size
+
             </label>
 
             <input
               type="number"
               min={1}
+              step="1"
               value={
-                formData.teamSize || 1
+                formData.teamSize === 0
+                  ? ""
+                  : formData.teamSize
               }
-              onChange={(e) =>
+              onChange={(e) => {
+
+                const v =
+                  e.target.value;
+
                 setFormData(
                   (prev) => ({
                     ...prev,
                     teamSize:
-                      Number(
-                        e.target.value
-                      ),
+                      v === ""
+                        ? 0
+                        : Number(v),
                   })
-                )
-              }
+                );
+              }}
+              onKeyDown={(e) => {
+
+                if (
+                  e.key === "-" ||
+                  e.key === "+" ||
+                  e.key === "e"
+                ) {
+
+                  e.preventDefault();
+                }
+              }}
               className="w-full rounded-xl bg-zinc-800 border border-zinc-700 px-4 py-3"
             />
+
           </div>
 
+          {/* USE CASE */}
+
           <div>
+
             <label className="text-sm text-zinc-400 block mb-2">
+
               Primary Use Case
+
             </label>
 
             <select
@@ -117,6 +160,7 @@ export default function DetailsStep({
               }
               className="w-full rounded-xl bg-zinc-800 border border-zinc-700 px-4 py-3"
             >
+
               <option value="coding">
                 Coding
               </option>
@@ -136,14 +180,81 @@ export default function DetailsStep({
               <option value="mixed">
                 Mixed
               </option>
+
             </select>
+
           </div>
+
         </div>
+
+        {/* ERROR */}
+
+        {error && (
+
+          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 px-5 py-4 text-red-300">
+
+            {error}
+
+          </div>
+
+        )}
+
       </div>
 
+      {/* AUDIT BUTTON */}
+
       <AuditButton
-        startAudit={startAudit}
+        startAudit={() => {
+
+         const invalid =
+  Object.values(
+    formData.toolDetails
+  ).some(
+    (detail: any) => {
+
+      return (
+
+        !detail.monthlySpend ||
+
+        detail.monthlySpend <= 0 ||
+
+        Number.isNaN(
+          detail.monthlySpend
+        ) ||
+
+        !detail.seats ||
+
+        detail.seats <= 0 ||
+
+        Number.isNaN(
+          detail.seats
+        ) ||
+
+        !detail.plan
+
+      );
+    }
+  );
+
+          if (
+            invalid ||
+            !formData.teamSize ||
+            formData.teamSize <= 0
+          ) {
+
+            setError(
+              "Please enter valid monthly spend and team size before running the AI audit."
+            );
+
+            return;
+          }
+
+          setError("");
+
+          startAudit();
+        }}
       />
+
     </motion.div>
   );
 }
