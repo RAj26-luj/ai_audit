@@ -1,3 +1,22 @@
+import { NextResponse } from "next/server";
+
+const MODELS = [
+  "google/gemini-3.1-flash-lite",
+  "openai/gpt-4.1-mini",
+  "mistralai/mistral-small-3.1",
+];
+
+const FALLBACK_SUMMARY = (
+  yearlySpend: number,
+  waste: number
+) => `
+Your organization currently spends approximately $${yearlySpend?.toLocaleString()} annually on AI tooling.
+
+The audit identified optimization opportunities across overlapping subscriptions, pricing inefficiencies, and seat allocation.
+
+An estimated ${waste}% reduction in AI spend may be achievable while maintaining productivity and workflow quality.
+`.trim();
+
 export async function POST(
   req: Request
 ) {
@@ -7,90 +26,191 @@ export async function POST(
     const body =
       await req.json();
 
+    const yearlySpend =
+      Number(
+        body?.yearlySpend
+      ) || 0;
+
+    const waste =
+      Number(
+        body?.waste
+      ) || 0;
+
+    const recommendations =
+      Array.isArray(
+        body?.recommendations
+      )
+        ? body.recommendations
+        : [];
+
+    const formattedRecommendations =
+      recommendations.length
+        ? recommendations
+            .map(
+              (r: any) =>
+                `- ${r.title}: ${r.description}`
+            )
+            .join("\n")
+        : "- No major optimization recommendations detected.";
+
     const prompt = `
-You are an AI SaaS optimization consultant.
+You are an expert AI SaaS optimization consultant.
 
-Generate a concise executive summary.
+Generate a concise executive summary for a company AI infrastructure audit.
 
-Yearly AI Spend:
-$${body.yearlySpend}
+Requirements:
+- professional tone
+- executive-friendly
+- concise
+- under 150 words
+- mention savings opportunity
+- explain major inefficiencies
+- summarize key recommendation impact
+
+Company AI Spend:
+$${yearlySpend}
 
 Optimization Opportunity:
-${body.waste}%
+${waste}%
 
 Recommendations:
-${body.recommendations
-  .map(
-    (r: any) =>
-      `- ${r.title}: ${r.description}`
-  )
-  .join("\n")}
+${formattedRecommendations}
 `;
 
-    const res =
-      await fetch(
-        "https://api-inference.huggingface.co/models/google/flan-t5-large",
-        {
-          method: "POST",
+    for (const model of MODELS) {
 
-          headers: {
-            Authorization:
-              `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+      try {
 
-            "Content-Type":
-              "application/json",
-          },
+        const res =
+          await fetch(
+            "https://openrouter.ai/api/v1/chat/completions",
+            {
+              method: "POST",
 
-          body: JSON.stringify({
-            inputs:
-              prompt,
-          }),
+              headers: {
+
+                Authorization:
+                  `Bearer ${process.env.OPENROUTER_API_KEY}`,
+
+                "Content-Type":
+                  "application/json",
+
+                "HTTP-Referer":
+                  "http://localhost:3000",
+
+                "X-Title":
+                  "StackAudit",
+              },
+
+              body: JSON.stringify({
+
+                model,
+
+                messages: [
+                  {
+                    role: "system",
+
+                    content:
+                      "You are a senior AI infrastructure optimization consultant specializing in SaaS cost analysis.",
+                  },
+                  {
+                    role: "user",
+
+                    content:
+                      prompt,
+                  },
+                ],
+
+                temperature: 0.6,
+
+                max_tokens: 220,
+              }),
+            }
+          );
+
+        // FAILED REQUEST
+
+        if (!res.ok) {
+
+          const err =
+            await res.json();
+
+          console.error(
+            `MODEL FAILED: ${model}`,
+            err
+          );
+
+          continue;
         }
-      );
-if (!res.ok) {
 
-  return Response.json({
-    summary: `
-Your organization currently spends approximately $${body.yearlySpend.toLocaleString()} annually on AI tooling.
+        const data =
+          await res.json();
 
-Our audit identified optimization opportunities across overlapping subscriptions, pricing inefficiencies, and seat allocation.
+        const summary =
+          data?.choices?.[0]
+            ?.message?.content;
 
-Based on your current stack, we estimate up to ${body.waste}% potential savings through AI stack consolidation and workflow optimization.
-`,
-  });
-}
-const text =
-  await res.text();
+        // SUCCESS
 
-let data;
+        if (
+          summary &&
+          typeof summary ===
+            "string"
+        ) {
 
-try {
+          return NextResponse.json({
 
-  data =
-    JSON.parse(text);
+            success: true,
 
-} catch {
+            model,
 
-  return Response.json({
-    summary:
-      "AI summary generation temporarily unavailable.",
-  });
-}
+            summary:
+              summary.trim(),
+          });
+        }
 
-    return Response.json({
+      } catch (err) {
+
+        console.error(
+          `MODEL ERROR: ${model}`,
+          err
+        );
+      }
+    }
+
+    // FALLBACK
+
+    return NextResponse.json({
+
+      success: false,
+
+      fallback: true,
+
       summary:
-        data[0]
-          ?.generated_text ||
-        "AI summary unavailable.",
+        FALLBACK_SUMMARY(
+          yearlySpend,
+          waste
+        ),
     });
 
   } catch (err) {
 
-    console.error(err);
+    console.error(
+      "SUMMARY API ERROR:",
+      err
+    );
 
-    return Response.json({
-      summary:
-        "AI summary unavailable.",
-    });
+    return NextResponse.json(
+      {
+
+        success: false,
+
+        summary:
+          "AI summary generation is temporarily unavailable.",
+      },
+      {
+        status: 500,
+      }
+    );
   }
 }

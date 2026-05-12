@@ -48,7 +48,7 @@ export default function Results({
         className="max-w-7xl mx-auto"
       >
 
-        {/* printable */}
+        {/* PRINTABLE */}
 
         <div className="hidden">
 
@@ -62,11 +62,11 @@ export default function Results({
 
         </div>
 
-        {/* header */}
+        {/* HEADER */}
 
         <ResultsHeader />
 
-        {/* hero */}
+        {/* HERO */}
 
         <div className="mt-10 rounded-3xl border border-white/10 bg-gradient-to-br from-indigo-500/10 to-transparent p-8 md:p-12">
 
@@ -83,7 +83,8 @@ export default function Results({
               <h2 className="mt-4 text-5xl md:text-7xl font-black tracking-tight">
 
                 $
-                {(
+
+                {Math.round(
                   data.monthlySavings || 0
                 ).toLocaleString()}
 
@@ -97,9 +98,11 @@ export default function Results({
 
               <p className="mt-4 text-lg text-gray-400 max-w-2xl leading-relaxed">
 
-                AI optimization engine analyzed your stack and identified pricing,
-                overlap,
-                and seat allocation inefficiencies.
+                Our AI optimization engine analyzed your software stack,
+                identified redundant subscriptions,
+                pricing inefficiencies,
+                and underutilized seats,
+                then generated actionable savings recommendations.
 
               </p>
 
@@ -117,7 +120,7 @@ export default function Results({
 
         </div>
 
-        {/* stats */}
+        {/* STATS */}
 
         <div className="mt-8">
 
@@ -154,7 +157,7 @@ export default function Results({
 
         </div>
 
-        {/* content */}
+        {/* CONTENT */}
 
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 print:block mt-8">
 
@@ -164,8 +167,21 @@ export default function Results({
 
             <ExecutiveSummary
               summary={
-                data.summary ||
-                "Your AI stack was analyzed for optimization opportunities."
+                data.summary?.trim()
+                  ? data.summary
+                  : `
+## AI Spend Analysis
+
+Your AI stack was analyzed for optimization opportunities.
+
+The system reviewed:
+- subscription overlap
+- pricing inefficiencies
+- unused seats
+- tooling redundancy
+
+Potential savings and optimization insights are shown below.
+                    `
               }
 
               savings={
@@ -189,7 +205,9 @@ export default function Results({
               }
 
               benchmarkMessage={
-                `Your stack has a ${data.savingsPercentage || 0}% optimization opportunity.`
+                data.savingsPercentage > 0
+                  ? `Your stack has a ${data.savingsPercentage}% optimization opportunity compared to similar AI-first teams.`
+                  : "Your current AI stack already appears highly optimized."
               }
             />
 
@@ -213,15 +231,40 @@ export default function Results({
 
           <div className="xl:col-span-4 space-y-8 print:mt-6 print:space-y-6">
 
-            <Recommendations
-              recommendations={
-                data.recommendations || []
-              }
+            {
+              data.recommendations?.length > 0 ? (
 
-              auditId={
-                data.id || "demo"
-              }
-            />
+                <Recommendations
+                  recommendations={
+                    data.recommendations || []
+                  }
+
+                  auditId={
+                    data.id || "demo"
+                  }
+                />
+
+              ) : (
+
+                <div className="rounded-3xl border border-emerald-500/20 bg-emerald-500/10 p-8">
+
+                  <h3 className="text-2xl font-bold text-emerald-300">
+
+                    Stack Already Optimized
+
+                  </h3>
+
+                  <p className="mt-3 text-gray-300 leading-7">
+
+                    Our optimization engine did not detect any major pricing inefficiencies,
+                    subscription overlap,
+                    or unused seat allocations in your current AI stack.
+
+                  </p>
+
+                </div>
+              )
+            }
 
             <OptimizationCTA
               savings={
