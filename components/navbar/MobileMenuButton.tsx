@@ -1,18 +1,35 @@
-// mobile hamburger button
+"use client";
 
-export default function MobileMenuButton() {
+import {
+  Menu,
+  X,
+} from "lucide-react";
+
+type Props = {
+  open: boolean;
+
+  toggle: () => void;
+};
+
+export default function MobileMenuButton({
+  open,
+  toggle,
+}: Props) {
 
   return (
-    <div className="md:hidden">
 
-      <button className="rounded-xl border border-white/10 bg-white/5 p-2 hover:bg-white/10 transition-colors">
+    <button
+      onClick={toggle}
+      className="w-11 h-11 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white"
+    >
 
-        <div className="w-6 h-0.5 bg-white mb-1.5 rounded-full" />
+      {open ? (
+        <X size={22} />
+      ) : (
+        <Menu size={22} />
+      )}
 
-        <div className="w-6 h-0.5 bg-white mb-1.5 rounded-full" />
+    </button>
 
-        <div className="w-4 h-0.5 bg-white ml-2 rounded-full" />
-      </button>
-    </div>
   );
 }
