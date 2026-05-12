@@ -16,10 +16,6 @@ import {
   TOOLS_CONFIG,
 } from "@/data/tools";
 
-import {
-  generateAISummary,
-} from "@/lib/ai-summary";
-
 import type {
   StepType,
   FormDataType,
@@ -150,7 +146,7 @@ export function useHomeAudit() {
             formData.useCase,
         };
 
-        // API ENGINE
+        // OPTIMIZATION API
 
         const res =
           await fetch(
@@ -176,23 +172,58 @@ export function useHomeAudit() {
         const result =
           await res.json();
 
-        // AI SUMMARY ONLY
+        // AI SUMMARY API
 
-        const summary =
-          await generateAISummary({
+        let summary =
+          "AI summary unavailable.";
 
-            yearlySpend:
-              result.yearlySavings ||
-              0,
+        try {
 
-            waste:
-              result.savingsPercentage ||
-              0,
+          const summaryRes =
+            await fetch(
+              "/api/summary",
+              {
 
-            recommendations:
-              result.recommendations ||
-              [],
-          });
+                method:
+                  "POST",
+
+                headers: {
+
+                  "Content-Type":
+                    "application/json",
+                },
+
+                body:
+                  JSON.stringify({
+                    yearlySpend:
+                      result.yearlySavings ||
+                      0,
+
+                    waste:
+                      result.savingsPercentage ||
+                      0,
+
+                    recommendations:
+                      result.recommendations ||
+                      [],
+                  }),
+              }
+            );
+
+          const summaryData =
+            await summaryRes.json();
+
+          summary =
+            summaryData?.summary ||
+            summary;
+
+        } catch (err) {
+
+          console.error(
+            "SUMMARY ERROR:",
+            err
+          );
+        }
 
         // FINAL RESULT
 
@@ -254,7 +285,7 @@ export function useHomeAudit() {
       }
     };
 
-  // SAVE ONLY LEAD INFO
+  // SAVE LEAD INFO
 
   const submitLead =
     async (
@@ -302,8 +333,6 @@ export function useHomeAudit() {
         setShowLeadModal(
           false
         );
-
-        // GO TO AUDIT PAGE
 
         router.push(
           `/audit/${auditId}`
