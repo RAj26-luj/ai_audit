@@ -64,7 +64,7 @@ The platform combines rule-based financial analysis with AI-generated summaries 
 - TypeScript
 - Tailwind CSS
 - Supabase
-- HuggingFace
+- OpenRouter API
 - Jest
 - html2canvas
 - jsPDF
