@@ -93,3 +93,62 @@ User Input → Audit Engine → Recommendation Generator → AI Summary → Dash
 ```bash
 npm install
 npm run dev
+```
+
+---
+
+## Production Build
+
+```bash
+npm run build
+npm start
+```
+
+---
+
+## Running Tests
+
+```bash
+npm test
+```
+
+---
+
+## Deployment
+
+Deployed on Vercel.
+
+Live URL:
+https://your-deployment-url.vercel.app
+
+---
+
+## Decisions
+
+### 1. Rule-Based Audit Logic Instead of Fully AI-Generated Audits
+
+The audit engine uses deterministic rules because financial calculations and optimization recommendations need to remain explainable and consistent.
+
+---
+
+### 2. AI Used Only For Executive Summaries
+
+AI is limited to generating readable summaries instead of handling core optimization logic. This reduced hallucinations and improved reliability.
+
+---
+
+### 3. No Login Before Audit
+
+The product intentionally avoids authentication before showing value. Users receive recommendations first, then optional lead capture appears afterward.
+
+---
+
+### 4. Modular Component Structure
+
+Large UI sections were split into reusable components and hooks to simplify debugging and improve maintainability while learning Next.js and TypeScript.
+
+---
+
+### 5. Mobile-First Dashboard Adjustments
+
+Several layouts were redesigned specifically for mobile responsiveness because the optimization dashboard initially became too dense and visually broken on smaller screens.

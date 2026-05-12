@@ -24,7 +24,9 @@ E --> H[Shareable Audit URL]
 - TypeScript
 - Tailwind CSS
 - Supabase
-- HuggingFace Inference API
+- OpenRouter API
+
+---
 
 ## Data Flow
 
@@ -36,6 +38,21 @@ E --> H[Shareable Audit URL]
 6. Lead information and audit data are stored in Supabase.
 7. Each audit gets a shareable public URL.
 
+---
+
+## Project Structure
+
+```text
+app/          → routes and API endpoints
+components/   → reusable UI sections
+hooks/        → custom React hooks
+lib/          → business logic and utilities
+data/         → pricing and tool configuration
+types/        → shared TypeScript types
+```
+
+---
+
 ## Why This Stack
 
 Next.js was chosen because it provides API routes, dynamic routing, and a smooth full-stack workflow.
@@ -46,9 +63,22 @@ Supabase was chosen for quick backend setup and easy database integration.
 
 Tailwind CSS was used for faster UI development and responsive layouts.
 
+---
+
+## Architecture Decisions
+
+The frontend was intentionally split into smaller reusable components and hooks to improve maintainability and reduce debugging complexity.
+
+The audit engine uses mostly rule-based logic instead of fully AI-generated reasoning because financial optimization requires deterministic and explainable outputs.
+
+AI is primarily used for generating executive summaries and improving report readability.
+
+---
+
 ## Scaling Considerations
 
 If the app needed to support thousands of audits per day:
+
 - Audit calculations would move to dedicated backend services
 - Pricing data would be cached and centralized
 - Queue systems and rate limiting would be added for AI summary generation
