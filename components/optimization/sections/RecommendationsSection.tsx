@@ -74,22 +74,28 @@ export default function RecommendationsSection({
 
   return (
 
-    <section className="mt-2">
+    <section className="mt-2 w-full overflow-hidden">
 
-      <div className="mb-3">
+      {/* HEADER */}
 
-        <h2 className="text-3xl font-black flex items-center gap-2 text-white">
+      <div className="mb-5">
+
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-black flex items-center gap-2 text-white leading-tight">
 
           <Sparkles
-            className="text-indigo-400"
-            size={26}
+            className="text-indigo-400 shrink-0"
+            size={22}
           />
 
-          Optimization Recommendations
+          <span className="break-words">
+
+            Optimization Recommendations
+
+          </span>
 
         </h2>
 
-        <p className="text-slate-400 mt-1 text-sm">
+        <p className="text-slate-400 mt-2 text-xs sm:text-sm leading-relaxed">
 
           Every change recalculates the entire AI stack dynamically.
 
@@ -97,7 +103,9 @@ export default function RecommendationsSection({
 
       </div>
 
-      <div className="space-y-3 max-w-full">
+      {/* LIST */}
+
+      <div className="space-y-4 max-w-full">
 
         {recommendations.map(
           (rec) => {
@@ -123,12 +131,14 @@ export default function RecommendationsSection({
 
               <div
                 key={rec.id}
-                className={`rounded-2xl border transition-all duration-300 glass card-shadow hover-lift hover:shadow-xl hover:shadow-black/20 ${
+                className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
                   active
-                    ? "border-emerald-500/30 bg-emerald-500/10"
-                    : "border-slate-800 bg-slate-900/50"
+                    ? "border-emerald-500/20 bg-emerald-500/[0.04]"
+                    : "border-slate-800 bg-slate-900/40"
                 }`}
               >
+
+                {/* MAIN CARD */}
 
                 <RecommendationCard
                   rec={rec}
@@ -136,25 +146,29 @@ export default function RecommendationsSection({
                   toggle={toggle}
                 />
 
-                <div className="px-4 pb-4">
+                {/* FOOTER */}
 
-                  <div className="flex flex-wrap items-center gap-3 mb-4">
+                <div className="px-3 sm:px-4 pb-4">
+
+                  {/* BADGES */}
+
+                  <div className="flex flex-wrap items-center gap-2 mb-4">
 
                     <div
-                      className={`inline-flex items-center gap-2 px-2.5 py-1 rounded-lg text-xs font-semibold ${
+                      className={`inline-flex items-center gap-2 px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-semibold ${
                         active
-                          ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                          ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/20"
                           : "bg-slate-800 text-slate-300 border border-slate-700"
                       }`}
                     >
 
                       {active ? (
                         <CheckCircle2
-                          size={14}
+                          size={13}
                         />
                       ) : (
                         <AlertTriangle
-                          size={14}
+                          size={13}
                         />
                       )}
 
@@ -164,7 +178,7 @@ export default function RecommendationsSection({
 
                     </div>
 
-                    <div className="text-indigo-300 font-bold text-sm">
+                    <div className="text-indigo-300 font-bold text-xs sm:text-sm">
 
                       $
                       {Math.round(
@@ -174,12 +188,12 @@ export default function RecommendationsSection({
 
                     </div>
 
-                    <div className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${
+                    <div className={`px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-bold border ${
                       risk === "High"
-                        ? "bg-red-500/10 border-red-500/30 text-red-300"
+                        ? "bg-red-500/10 border-red-500/20 text-red-300"
                         : risk === "Medium"
-                        ? "bg-amber-500/10 border-amber-500/30 text-amber-300"
-                        : "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
+                        ? "bg-amber-500/10 border-amber-500/20 text-amber-300"
+                        : "bg-emerald-500/10 border-emerald-500/20 text-emerald-300"
                     }`}>
 
                       {risk} Risk
@@ -188,18 +202,20 @@ export default function RecommendationsSection({
 
                   </div>
 
+                  {/* SEAT CONTROL */}
+
                   {isSeatReduction && active && (
 
-                    <div className="rounded-xl border border-slate-700 bg-slate-950/60 p-3 mb-4">
+                    <div className="rounded-xl border border-slate-700/70 bg-slate-950/60 p-3 mb-4">
 
                       <div className="flex items-center gap-2 mb-3">
 
                         <SlidersHorizontal
-                          className="text-indigo-300"
-                          size={16}
+                          className="text-indigo-300 shrink-0"
+                          size={15}
                         />
 
-                        <h4 className="font-bold text-sm text-white">
+                        <h4 className="font-bold text-xs sm:text-sm text-white">
 
                           Seat Optimization
 
@@ -207,7 +223,7 @@ export default function RecommendationsSection({
 
                       </div>
 
-                      <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center justify-between gap-2">
 
                         <button
                           onClick={() =>
@@ -222,11 +238,11 @@ export default function RecommendationsSection({
                               )
                             )
                           }
-                          className="w-9 h-9 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-all"
+                          className="w-10 h-10 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-all shrink-0"
                         >
 
                           <Minus
-                            size={15}
+                            size={14}
                             className="text-white"
                           />
 
@@ -250,7 +266,7 @@ export default function RecommendationsSection({
                               )
                             )
                           }
-                          className="w-20 rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-center text-sm text-white outline-none focus:border-indigo-500/40 focus:ring-2 focus:ring-indigo-500/10"
+                          className="flex-1 rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-center text-sm text-white outline-none focus:border-indigo-500/40 focus:ring-2 focus:ring-indigo-500/10"
                         />
 
                         <button
@@ -263,11 +279,11 @@ export default function RecommendationsSection({
                               ) + 1
                             )
                           }
-                          className="w-9 h-9 rounded-lg bg-indigo-500 hover:bg-indigo-400 flex items-center justify-center transition-all"
+                          className="w-10 h-10 rounded-lg bg-indigo-500 hover:bg-indigo-400 flex items-center justify-center transition-all shrink-0"
                         >
 
                           <Plus
-                            size={15}
+                            size={14}
                             className="text-white"
                           />
 
@@ -279,18 +295,20 @@ export default function RecommendationsSection({
 
                   )}
 
+                  {/* PLAN CONTROL */}
+
                   {isDowngrade && active && (
 
-                    <div className="rounded-xl border border-slate-700 bg-slate-950/60 p-3 mb-4">
+                    <div className="rounded-xl border border-slate-700/70 bg-slate-950/60 p-3 mb-4">
 
                       <div className="flex items-center gap-2 mb-3">
 
                         <SlidersHorizontal
-                          className="text-indigo-300"
-                          size={16}
+                          className="text-indigo-300 shrink-0"
+                          size={15}
                         />
 
-                        <h4 className="font-bold text-sm text-white">
+                        <h4 className="font-bold text-xs sm:text-sm text-white">
 
                           Plan Optimization
 
@@ -309,7 +327,7 @@ export default function RecommendationsSection({
                             e.target.value
                           )
                         }
-                        className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2.5 text-sm text-white outline-none focus:border-indigo-500/40 focus:ring-2 focus:ring-indigo-500/10"
+                        className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-3 text-sm text-white outline-none focus:border-indigo-500/40 focus:ring-2 focus:ring-indigo-500/10"
                       >
 
                         <option value="Enterprise">
@@ -342,18 +360,20 @@ export default function RecommendationsSection({
 
                   )}
 
+                  {/* WARNING */}
+
                   {rec.warning && (
 
-                    <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 px-3 py-2.5">
+                    <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 px-3 py-3">
 
                       <div className="flex items-start gap-2">
 
                         <AlertTriangle
-                          className="text-amber-300 mt-0.5"
+                          className="text-amber-300 mt-0.5 shrink-0"
                           size={14}
                         />
 
-                        <p className="text-xs text-amber-100/80 leading-relaxed">
+                        <p className="text-xs sm:text-sm text-amber-100/80 leading-relaxed break-words">
 
                           {rec.warning}
 

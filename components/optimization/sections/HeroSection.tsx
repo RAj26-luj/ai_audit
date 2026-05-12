@@ -12,11 +12,11 @@ export default function HeroSection({
 
   return (
 
-    <section className="relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/60 px-8 py-7 glass card-shadow">
+    <section className="relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/60 px-5 py-6 sm:px-8 sm:py-7 glass card-shadow">
 
       {/* BACKGROUND GLOW */}
 
-      <div className="absolute right-0 top-0 h-64 w-64 bg-indigo-500/10 blur-3xl rounded-full pointer-events-none" />
+      <div className="absolute right-0 top-0 h-48 w-48 sm:h-64 sm:w-64 bg-indigo-500/10 blur-3xl rounded-full pointer-events-none" />
 
       <div className="relative z-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-6">
 
@@ -24,7 +24,7 @@ export default function HeroSection({
 
         <div className="max-w-3xl">
 
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-[10px] sm:text-xs font-semibold mb-4">
 
             <Sparkles size={14} />
 
@@ -32,15 +32,18 @@ export default function HeroSection({
 
           </div>
 
-          <h1 className="text-4xl lg:text-5xl font-black leading-tight tracking-tight text-white">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight text-white">
 
-            Get Your Optimized AI Stack
+            Get Your
+            <br className="hidden sm:block" />
+            Optimized AI Stack
 
           </h1>
 
-          <p className="mt-3 text-sm lg:text-base text-slate-400 leading-relaxed max-w-2xl">
+          <p className="mt-3 text-sm sm:text-base text-slate-400 leading-relaxed max-w-2xl">
 
-            Simulate AI infrastructure optimizations, customize recommendations,
+            Simulate AI infrastructure optimizations,
+            customize recommendations,
             and dynamically calculate savings in real time.
 
           </p>
@@ -49,11 +52,11 @@ export default function HeroSection({
 
         {/* RIGHT */}
 
-        <div className="grid grid-cols-2 gap-3 shrink-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full xl:w-auto shrink-0">
 
           {/* MONTHLY */}
 
-          <div className="rounded-2xl bg-emerald-500/10 border border-emerald-500/20 px-5 py-4 min-w-[180px]">
+          <div className="rounded-2xl bg-emerald-500/10 border border-emerald-500/20 px-5 py-4 w-full sm:min-w-[180px]">
 
             <p className="text-xs text-slate-400">
 
@@ -61,7 +64,7 @@ export default function HeroSection({
 
             </p>
 
-            <p className="mt-2 text-4xl font-black text-emerald-400 leading-none">
+            <p className="mt-2 text-3xl sm:text-4xl font-black text-emerald-400 leading-none break-all">
 
               $
               {Math.round(
@@ -74,7 +77,7 @@ export default function HeroSection({
 
           {/* YEARLY */}
 
-          <div className="rounded-2xl bg-indigo-500/10 border border-indigo-500/20 px-5 py-4 min-w-[180px]">
+          <div className="rounded-2xl bg-indigo-500/10 border border-indigo-500/20 px-5 py-4 w-full sm:min-w-[180px]">
 
             <p className="text-xs text-slate-400">
 
@@ -82,7 +85,7 @@ export default function HeroSection({
 
             </p>
 
-            <p className="mt-2 text-4xl font-black text-indigo-400 leading-none">
+            <p className="mt-2 text-3xl sm:text-4xl font-black text-indigo-400 leading-none break-all">
 
               $
               {Math.round(
