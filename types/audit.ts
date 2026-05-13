@@ -13,14 +13,8 @@ export type UseCaseType =
 
 export type FormDataType = {
   selectedTools: string[];
-
-  toolDetails: Record<
-    string,
-    ToolDetail
-  >;
-
+  toolDetails: Record<string, ToolDetail>;
   teamSize: number;
-
   useCase: UseCaseType;
 };
 

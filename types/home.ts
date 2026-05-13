@@ -1,4 +1,4 @@
-// home page types
+//home page types
 
 export type StepType =
   | "landing"
@@ -8,9 +8,7 @@ export type StepType =
 
 export type ToolDetail = {
   plan: string;
-
   seats: number;
-
   monthlySpend: number;
 };
 
@@ -23,13 +21,7 @@ export type UseCaseType =
 
 export type FormDataType = {
   selectedTools: string[];
-
-  toolDetails: Record<
-    string,
-    ToolDetail
-  >;
-
+  toolDetails: Record<string, ToolDetail>;
   teamSize: number;
-
   useCase: UseCaseType;
 };

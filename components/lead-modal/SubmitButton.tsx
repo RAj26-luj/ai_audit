@@ -1,5 +1,4 @@
-// form submit button
-
+//submit btn
 import { motion } from "framer-motion";
 
 import {
@@ -10,19 +9,16 @@ type Props = {
   loading: boolean;
 };
 
+//submit
 export default function SubmitButton({
   loading,
 }: Props) {
 
   return (
     <motion.button
-      whileHover={{
-        scale: 1.02,
-      }}
+      whileHover={{ scale: 1.02 }}
 
-      whileTap={{
-        scale: 0.98,
-      }}
+      whileTap={{ scale: 0.98 }}
 
       type="submit"
 
@@ -38,7 +34,9 @@ export default function SubmitButton({
           : "Unlock Full Insights"}
 
         <ArrowRight size={20} />
+
       </div>
+
     </motion.button>
   );
 }

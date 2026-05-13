@@ -1,11 +1,11 @@
 "use client";
 
-// main wrapper component
-
+//inputs wrapper
 import { useState } from "react";
 
 import SelectionStep from "./SelectionStep";
 import DetailsStep from "./DetailsStep";
+
 import FooterStatus from "./FooterStatus";
 
 import { useToolSelection } from "./hooks/useToolSelection";
@@ -22,18 +22,19 @@ type Props = {
   startAudit: () => void;
 };
 
+//inputs page
 export default function Inputs({
   formData,
   setFormData,
   startAudit,
 }: Props) {
 
-  // current screen
+  //current step
   const [step, setStep] = useState<
     "selection" | "details"
   >("selection");
 
-  // tool logic
+  //tool logic
   const {
     toggleTool,
     updateDetail,
@@ -57,15 +58,23 @@ export default function Inputs({
       {step === "details" && (
         <DetailsStep
           formData={formData}
+
           setFormData={setFormData}
+
           selectedToolsData={selectedToolsData}
+
           updateDetail={updateDetail}
+
           startAudit={startAudit}
-          goBack={() => setStep("selection")}
+
+          goBack={() =>
+            setStep("selection")
+          }
         />
       )}
 
       <FooterStatus />
+
     </div>
   );
 }

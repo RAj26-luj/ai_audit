@@ -1,42 +1,41 @@
 # StackAudit
 
-StackAudit is an AI spend auditing tool built for startups and small teams to analyze AI subscription costs, detect overspending, and recommend better pricing or tool choices.
+StackAudit is an AI spend auditing tool built for startups and small teams. It analyzes AI subscription costs, detects overspending, and recommends better pricing or tool configurations.
 
-The project is designed as a lead-generation product for Credex by helping teams understand where they can optimize their AI stack spending.
+The project is built as a lead-generation product for Credex by helping teams understand and optimize their AI stack spending.
 
 ---
 
 ## Problem
 
-Startups and engineering teams often overspend on overlapping AI subscriptions like ChatGPT, Claude, Cursor, Copilot, and Gemini without realizing how much waste exists across seats and plans.
+Startups and engineering teams often overspend on overlapping AI subscriptions such as ChatGPT, Claude, Cursor, Copilot, and Gemini without clear visibility into redundancy or actual usage efficiency.
 
-Many teams purchase multiple AI tools with similar functionality, leading to unnecessary recurring expenses and poor visibility into actual ROI.
+As teams adopt more AI tools, they frequently end up paying for multiple services with similar capabilities, leading to unnecessary recurring costs and reduced ROI clarity.
 
 ---
 
 ## Solution
 
-StackAudit analyzes AI tool usage, pricing, seat allocation, and overlapping functionality to generate optimization recommendations and estimated yearly savings.
+StackAudit analyzes AI tool usage, pricing, seat allocation, and overlap between tools to generate optimization recommendations and estimated savings.
 
-The platform combines rule-based financial analysis with AI-generated summaries to produce actionable optimization reports for engineering teams.
+The system combines deterministic rule-based financial analysis with AI-generated summaries to produce clear and actionable optimization reports.
 
 ---
 
 ## Features
 
 - AI tool spend audit
-- Savings analysis
+- Savings estimation and analysis
 - Tool overlap detection
 - Plan downgrade recommendations
 - AI-generated executive summaries
-- Shareable audit result pages
-- Lead capture with Supabase
-- CI/CD pipeline with GitHub Actions
-- Benchmark analysis
+- Shareable audit report pages
+- Lead capture integration with Supabase
+- Benchmarking insights
 - Spend-per-employee metrics
-- Optimization scoring
+- Optimization scoring system
 - PDF export support
-- Share/copy audit links
+- Shareable audit links
 - Rule-based recommendation engine
 - Audit engine testing with Jest
 
@@ -50,7 +49,7 @@ The platform combines rule-based financial analysis with AI-generated summaries 
 ### Dashboard
 ![Dashboard](public/screenshots/dashboard.png)
 
-### Optimization
+### Optimization View
 ![Optimization](public/screenshots/optimization.png)
 
 ### Mobile View
@@ -73,18 +72,18 @@ The platform combines rule-based financial analysis with AI-generated summaries 
 
 ## Architecture Overview
 
-User Input → Audit Engine → Recommendation Generator → AI Summary → Dashboard/PDF Export
+User Input → Audit Engine → Recommendation Generator → AI Summary → Results Dashboard / PDF Export
 
 ---
 
 ## Project Structure
 
-- `app/` → Next.js routes and pages
-- `components/` → reusable UI sections
-- `lib/` → audit engine and business logic
+- `app/` → routes and API endpoints
+- `components/` → reusable UI components
+- `lib/` → core business logic and audit engine
 - `hooks/` → custom React hooks
-- `data/` → AI pricing data
-- `types/` → shared TypeScript types
+- `data/` → pricing and tool configuration
+- `types/` → shared TypeScript definitions
 
 ---
 
@@ -93,62 +92,3 @@ User Input → Audit Engine → Recommendation Generator → AI Summary → Dash
 ```bash
 npm install
 npm run dev
-```
-
----
-
-## Production Build
-
-```bash
-npm run build
-npm start
-```
-
----
-
-## Running Tests
-
-```bash
-npm test
-```
-
----
-
-## Deployment
-
-Deployed on Vercel.
-
-Live URL:
-https://your-deployment-url.vercel.app
-
----
-
-## Decisions
-
-### 1. Rule-Based Audit Logic Instead of Fully AI-Generated Audits
-
-The audit engine uses deterministic rules because financial calculations and optimization recommendations need to remain explainable and consistent.
-
----
-
-### 2. AI Used Only For Executive Summaries
-
-AI is limited to generating readable summaries instead of handling core optimization logic. This reduced hallucinations and improved reliability.
-
----
-
-### 3. No Login Before Audit
-
-The product intentionally avoids authentication before showing value. Users receive recommendations first, then optional lead capture appears afterward.
-
----
-
-### 4. Modular Component Structure
-
-Large UI sections were split into reusable components and hooks to simplify debugging and improve maintainability while learning Next.js and TypeScript.
-
----
-
-### 5. Mobile-First Dashboard Adjustments
-
-Several layouts were redesigned specifically for mobile responsiveness because the optimization dashboard initially became too dense and visually broken on smaller screens.

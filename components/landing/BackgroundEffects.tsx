@@ -1,4 +1,4 @@
-// animated background blobs
+//background effects
 import {
   motion,
   useTransform,
@@ -9,6 +9,7 @@ type Props = {
   mouseYSpring: any;
 };
 
+//animated bg
 export default function BackgroundEffects({
   mouseXSpring,
   mouseYSpring,
@@ -18,7 +19,7 @@ export default function BackgroundEffects({
     <>
       <div className="absolute inset-0 z-0 overflow-hidden">
 
-        {/* indigo */}
+        {/* indigo blob */}
         <motion.div
           animate={{
             x: [0, 50, -30, 0],
@@ -32,23 +33,15 @@ export default function BackgroundEffects({
           }}
 
           style={{
-            translateX: useTransform(
-              mouseXSpring,
-              [-0.5, 0.5],
-              [100, -100]
-            ),
+            translateX: useTransform(mouseXSpring, [-0.5, 0.5], [100, -100]),
 
-            translateY: useTransform(
-              mouseYSpring,
-              [-0.5, 0.5],
-              [100, -100]
-            ),
+            translateY: useTransform(mouseYSpring, [-0.5, 0.5], [100, -100]),
           }}
 
           className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-indigo-600/10 blur-[120px] rounded-full"
         />
 
-        {/* purple */}
+        {/* purple blob */}
         <motion.div
           animate={{
             x: [0, -60, 40, 0],
@@ -62,23 +55,15 @@ export default function BackgroundEffects({
           }}
 
           style={{
-            translateX: useTransform(
-              mouseXSpring,
-              [-0.5, 0.5],
-              [-150, 150]
-            ),
+            translateX: useTransform(mouseXSpring, [-0.5, 0.5], [-150, 150]),
 
-            translateY: useTransform(
-              mouseYSpring,
-              [-0.5, 0.5],
-              [-150, 150]
-            ),
+            translateY: useTransform(mouseYSpring, [-0.5, 0.5], [-150, 150]),
           }}
 
           className="absolute bottom-[-10%] right-[-10%] w-[700px] h-[700px] bg-purple-600/10 blur-[150px] rounded-full"
         />
 
-        {/* center */}
+        {/* center glow */}
         <motion.div
           animate={{
             opacity: [0.3, 0.6, 0.3],
@@ -91,6 +76,7 @@ export default function BackgroundEffects({
 
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-cyan-500/5 blur-[100px] rounded-full"
         />
+
       </div>
 
       {/* noise */}

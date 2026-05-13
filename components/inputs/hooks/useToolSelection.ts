@@ -1,4 +1,4 @@
-// tool selection and update logic
+//tool selection logic
 import { TOOLS_CONFIG } from "@/data/tools";
 
 import type {
@@ -14,15 +14,13 @@ export function useToolSelection(
   >
 ) {
 
-  // add or remove tool
+  //toggle tool
   const toggleTool = (
     toolId: string
   ) => {
 
     const exists =
-      formData.selectedTools.includes(
-        toolId
-      );
+      formData.selectedTools.includes(toolId);
 
     setFormData((prev) => {
 
@@ -30,15 +28,13 @@ export function useToolSelection(
         ? prev.selectedTools.filter(
             (t) => t !== toolId
           )
-        : [
-            ...prev.selectedTools,
-            toolId,
-          ];
+        : [...prev.selectedTools, toolId];
 
       const updatedDetails = {
         ...prev.toolDetails,
       };
 
+      //add defaults
       if (!exists) {
 
         updatedDetails[toolId] = {
@@ -49,6 +45,7 @@ export function useToolSelection(
 
       } else {
 
+        //remove tool
         delete updatedDetails[toolId];
       }
 
@@ -60,7 +57,7 @@ export function useToolSelection(
     });
   };
 
-  // update tool info
+  //update details
   const updateDetail = (
     toolId: string,
     field: keyof ToolDetail,
@@ -75,19 +72,16 @@ export function useToolSelection(
 
         [toolId]: {
           ...prev.toolDetails[toolId],
-
           [field]: value,
         },
       },
     }));
   };
 
-  // selected tool data
+  //selected tools
   const selectedToolsData =
     TOOLS_CONFIG.filter((tool) =>
-      formData.selectedTools.includes(
-        tool.id
-      )
+      formData.selectedTools.includes(tool.id)
     );
 
   return {

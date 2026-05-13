@@ -1,7 +1,15 @@
+import ReportHeader from "./printable-report/ReportHeader";
+import TopStats from "./printable-report/TopStats";
+import ExecutiveSummary from "./printable-report/ExecutiveSummary";
+import FinancialOverview from "./printable-report/FinancialOverview";
+import RecommendationsList from "./printable-report/RecommendationsList";
+import ReportFooter from "./printable-report/ReportFooter";
+
 type Props = {
   data: any;
 };
 
+//printable report
 export default function PrintableReport({
   data,
 }: Props) {
@@ -10,262 +18,30 @@ export default function PrintableReport({
 
     <div className="bg-white text-black p-12 max-w-5xl mx-auto space-y-10">
 
-      {/* HEADER */}
-
-      <div className="border-b pb-8">
-
-        <p className="text-sm text-gray-500 mb-3">
-
-          StackAudit Report
-
-        </p>
-
-        <h1 className="text-5xl font-black">
-
-          AI Optimization Audit
-
-        </h1>
-
-        <p className="text-gray-500 mt-4">
-
-          Generated on{" "}
-
-          {new Intl.DateTimeFormat(
-            "en-GB",
-            {
-              day: "2-digit",
-              month: "long",
-              year: "numeric",
-            }
-          ).format(new Date())}
-
-        </p>
-
-      </div>
-
-      {/* TOP STATS */}
-
-      <div className="grid grid-cols-2 gap-6">
-
-        <div className="border rounded-2xl p-6">
-
-          <p className="text-gray-500 text-sm">
-
-            Productivity Risk
-
-          </p>
-
-          <h2 className="text-5xl font-black mt-3">
-
-            {data.productivityRisk || "Low"}
-
-          </h2>
-
-        </div>
-
-        <div className="border rounded-2xl p-6">
-
-          <p className="text-gray-500 text-sm">
-
-            Estimated Yearly Savings
-
-          </p>
-
-          <h2 className="text-5xl font-black mt-3">
-
-            $
-
-            {(
-              data.yearlySavings || 0
-            ).toLocaleString()}
-
-          </h2>
-
-        </div>
-
-      </div>
-
-      {/* SUMMARY */}
-
-      <section className="space-y-4">
-
-        <h2 className="text-3xl font-bold">
-
-          Executive Summary
-
-        </h2>
-
-        <p className="text-lg leading-8 text-gray-700">
-
-          {data.summary ||
-            "AI optimization engine analyzed your stack and identified savings opportunities."}
-
-        </p>
-
-      </section>
-
-      {/* SPEND */}
-
-      <section className="space-y-6">
-
-        <h2 className="text-3xl font-bold">
-
-          Financial Overview
-
-        </h2>
-
-        <div className="grid grid-cols-3 gap-5">
-
-          <div className="bg-gray-100 rounded-2xl p-6">
-
-            <p className="text-sm text-gray-500">
-
-              Current Monthly Spend
-
-            </p>
-
-            <h3 className="text-3xl font-black mt-2">
-
-              $
-
-              {(
-                data.originalSpend || 0
-              ).toLocaleString()}
-
-            </h3>
-
-          </div>
-
-          <div className="bg-gray-100 rounded-2xl p-6">
-
-            <p className="text-sm text-gray-500">
-
-              Optimized Monthly Spend
-
-            </p>
-
-            <h3 className="text-3xl font-black mt-2">
-
-              $
-
-              {(
-                data.optimizedSpend || 0
-              ).toLocaleString()}
-
-            </h3>
-
-          </div>
-
-          <div className="bg-gray-100 rounded-2xl p-6">
-
-            <p className="text-sm text-gray-500">
-
-              Monthly Savings
-
-            </p>
-
-            <h3 className="text-3xl font-black mt-2">
-
-              $
-
-              {(
-                data.monthlySavings || 0
-              ).toLocaleString()}
-
-            </h3>
-
-          </div>
-
-        </div>
-
-      </section>
-
-      {/* RECOMMENDATIONS */}
-
-      <section className="space-y-6">
-
-        <h2 className="text-3xl font-bold">
-
-          Recommendations
-
-        </h2>
-
-        <div className="space-y-4">
-
-          {(data.recommendations || []).map(
-            (
-              rec: any,
-              idx: number
-            ) => (
-
-              <div
-                key={idx}
-                className="border rounded-2xl p-6"
-              >
-
-                <div className="flex justify-between items-center mb-4">
-
-                  <span className="text-xs font-bold uppercase tracking-wide bg-black text-white px-3 py-2 rounded-full">
-
-                    {rec.impact || rec.severity || "Medium"} Impact
-
-                  </span>
-
-                  {rec.savings && (
-
-                    <span className="font-bold text-lg">
-
-                      Save $
-
-                      {Math.round(
-                        rec.savings
-                      ).toLocaleString()}
-
-                      /mo
-
-                    </span>
-
-                  )}
-
-                </div>
-
-                <h3 className="text-2xl font-bold">
-
-                  {rec.title}
-
-                </h3>
-
-                <p className="text-gray-600 leading-7 mt-3">
-
-                  {rec.description}
-
-                </p>
-
-              </div>
-            )
-          )}
-
-        </div>
-
-      </section>
-
-      {/* FOOTER */}
-
-      <div className="pt-10 border-t text-sm text-gray-500 flex justify-between">
-
-        <span>
-
-          Generated by StackAudit
-
-        </span>
-
-        <span>
-
-          AI Infrastructure Optimization
-
-        </span>
-
-      </div>
+      {/* header */}
+      <ReportHeader />
+
+      {/* top stats */}
+      <TopStats
+        productivityRisk={data.productivityRisk}
+        yearlySavings={data.yearlySavings}
+      />
+
+      {/* summary */}
+      <ExecutiveSummary summary={data.summary} />
+
+      {/* financials */}
+      <FinancialOverview
+        originalSpend={data.originalSpend}
+        optimizedSpend={data.optimizedSpend}
+        monthlySavings={data.monthlySavings}
+      />
+
+      {/* recommendations */}
+      <RecommendationsList recommendations={data.recommendations} />
+
+      {/* footer */}
+      <ReportFooter />
 
     </div>
   );

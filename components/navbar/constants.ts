@@ -1,10 +1,7 @@
-// navbar constants
+//navbar data
+export const APP_NAME = "StackAudit";
 
-export const APP_NAME =
-  "StackAudit";
-
-export const CREDEX_URL =
-  "https://credex.rocks";
+export const CREDEX_URL = "https://credex.rocks";
 
 export const NAV_ITEMS = [
   "Home",

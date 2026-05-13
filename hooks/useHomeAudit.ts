@@ -1,370 +1,168 @@
 "use client";
 
-import {
-  useState,
-} from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
+import { TOOLS_CONFIG } from "@/data/tools";
 
-import {
-  useRouter,
-} from "next/navigation";
+import type { StepType, FormDataType } from "@/types/home";
 
-import {
-  supabase,
-} from "@/lib/supabase";
-
-import {
-  TOOLS_CONFIG,
-} from "@/data/tools";
-
-import type {
-  StepType,
-  FormDataType,
-} from "@/types/home";
-
+//home audit hook
 export function useHomeAudit() {
 
-  const router =
-    useRouter();
+  const router = useRouter();
 
-  // STEP
+  //step
+  const [step, setStep] = useState<StepType>("landing");
 
-  const [
-    step,
-    setStep,
-  ] =
-    useState<StepType>(
-      "landing"
-    );
+  //form
+  const [formData, setFormData] = useState<FormDataType>({
+    selectedTools: [],
+    toolDetails: {},
+    teamSize: 1,
+    useCase: "coding",
+  });
 
-  // FORM
+  //result
+  const [auditResult, setAuditResult] = useState<any>(null);
 
-  const [
-    formData,
-    setFormData,
-  ] =
-    useState<FormDataType>({
-      selectedTools: [],
-      toolDetails: {},
-      teamSize: 1,
-      useCase: "coding",
-    });
+  //lead modal
+  const [showLeadModal, setShowLeadModal] = useState(false);
 
-  // RESULT
+  //audit id
+  const [auditId] = useState(() => crypto.randomUUID());
 
-  const [
-    auditResult,
-    setAuditResult,
-  ] =
-    useState<any>(
-      null
-    );
+  //start audit
+  const startAudit = async () => {
 
-  // LEAD MODAL
+    try {
 
-  const [
-    showLeadModal,
-    setShowLeadModal,
-  ] =
-    useState(false);
+      setStep("loading");
 
-  // TEMP AUDIT ID
+      //build stack
+      const tools = formData.selectedTools.map((toolId) => {
 
-  const [
-    auditId,
-  ] =
-    useState(
-      crypto.randomUUID()
-    );
+        const config = TOOLS_CONFIG.find(t => t.id === toolId);
+        const details = formData.toolDetails[toolId];
 
-  // MAIN AUDIT
+        return {
+          id: toolId,
+          name: config?.name || toolId,
+          plan: details?.plan || "Pro",
+          pricePerSeat: details?.monthlySpend || 20,
+          seats: details?.seats || 1,
+        };
 
-  const startAudit =
-    async () => {
+      });
+
+      //payload
+      const payload = {
+        stack: tools,
+        originalStack: tools,
+        teamSize: formData.teamSize,
+        useCase: formData.useCase,
+      };
+
+      //optimize api
+      const res = await fetch("/api/optimize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await res.json();
+
+      //summary api
+      let summary = "AI summary unavailable.";
 
       try {
 
-        setStep(
-          "loading"
-        );
+        const summaryRes = await fetch("/api/summary", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            yearlySpend: result.yearlySavings || 0,
+            waste: result.savingsPercentage || 0,
+            recommendations: result.recommendations || [],
+          }),
+        });
 
-        // BUILD STACK
-
-        const tools =
-          formData.selectedTools.map(
-            (toolId) => {
-
-              const config =
-                TOOLS_CONFIG.find(
-                  (t) =>
-                    t.id ===
-                    toolId
-                );
-
-              const details =
-                formData.toolDetails[
-                  toolId
-                ];
-
-              return {
-
-                id:
-                  toolId,
-
-                name:
-                  config?.name ||
-                  toolId,
-
-                plan:
-                  details?.plan ||
-                  "Pro",
-
-                pricePerSeat:
-                  details?.monthlySpend ||
-                  20,
-
-                seats:
-                  details?.seats ||
-                  1,
-              };
-            }
-          );
-
-        // FULL STACK PAYLOAD
-
-        const payload = {
-
-          stack:
-            tools,
-
-          originalStack:
-            tools,
-
-          teamSize:
-            formData.teamSize,
-
-          useCase:
-            formData.useCase,
-        };
-
-        // OPTIMIZATION API
-
-        const res =
-          await fetch(
-            "/api/optimize",
-            {
-
-              method:
-                "POST",
-
-              headers: {
-
-                "Content-Type":
-                  "application/json",
-              },
-
-              body:
-                JSON.stringify(
-                  payload
-                ),
-            }
-          );
-
-        const result =
-          await res.json();
-
-        // AI SUMMARY API
-
-        let summary =
-          "AI summary unavailable.";
-
-        try {
-
-          const summaryRes =
-            await fetch(
-              "/api/summary",
-              {
-
-                method:
-                  "POST",
-
-                headers: {
-
-                  "Content-Type":
-                    "application/json",
-                },
-
-                body:
-                  JSON.stringify({
-                    yearlySpend:
-                      result.yearlySavings ||
-                      0,
-
-                    waste:
-                      result.savingsPercentage ||
-                      0,
-
-                    recommendations:
-                      result.recommendations ||
-                      [],
-                  }),
-              }
-            );
-
-          const summaryData =
-            await summaryRes.json();
-
-          summary =
-            summaryData?.summary ||
-            summary;
-
-        } catch (err) {
-
-          console.error(
-            "SUMMARY ERROR:",
-            err
-          );
-        }
-
-        // FINAL RESULT
-
-        const finalResult = {
-
-          id:
-            auditId,
-
-          ...result,
-
-          summary,
-
-          tools,
-        };
-
-        // SAVE RESULT LOCALLY
-
-        setAuditResult(
-          finalResult
-        );
-
-        // SAVE AUDIT IN DB
-
-        await supabase
-          .from("audits")
-          .insert([
-            {
-              id:
-                auditId,
-
-              result:
-                finalResult,
-            },
-          ]);
-
-        // SHOW RESULTS
-
-        setTimeout(() => {
-
-          setStep(
-            "results"
-          );
-
-          setShowLeadModal(
-            true
-          );
-
-        }, 1800);
+        const summaryData = await summaryRes.json();
+        summary = summaryData?.summary || summary;
 
       } catch (err) {
-
-        console.error(
-          err
-        );
-
-        setStep(
-          "inputs"
-        );
+        console.error("SUMMARY ERROR:", err);
       }
-    };
 
-  // SAVE LEAD INFO
+      //final result
+      const finalResult = {
+        id: auditId,
+        ...result,
+        summary,
+        tools,
+      };
 
-  const submitLead =
-    async (
-      leadData: {
-        email: string;
-        company: string;
-        role: string;
-        teamSize: number;
-      }
-    ) => {
+      setAuditResult(finalResult);
 
-      try {
+      //save to db
+      await supabase.from("audits").insert([
+        {
+          id: auditId,
+          result: finalResult,
+        },
+      ]);
 
-        const {
-          error,
-        } = await supabase
-          .from("leads")
-          .insert([
-            {
+      //go results
+      setTimeout(() => {
+        setStep("results");
+        setShowLeadModal(true);
+      }, 1800);
 
-              email:
-                leadData.email,
+    } catch (err) {
+      console.error(err);
+      setStep("inputs");
+    }
+  };
 
-              company:
-                leadData.company,
+  //submit lead
+  const submitLead = async (leadData: {
+    email: string;
+    company: string;
+    role: string;
+    teamSize: number;
+  }) => {
 
-              role:
-                leadData.role,
+    try {
 
-              team_size:
-                leadData.teamSize,
+      await supabase.from("leads").insert([
+        {
+          email: leadData.email,
+          company: leadData.company,
+          role: leadData.role,
+          team_size: leadData.teamSize,
+          audit_id: auditId,
+        },
+      ]);
 
-              audit_id:
-                auditId,
-            },
-          ]);
+      setShowLeadModal(false);
+      router.push(`/audit/${auditId}`);
 
-        if (error) {
+    } catch (err) {
 
-          console.error(
-            error
-          );
-        }
-
-        setShowLeadModal(
-          false
-        );
-
-        router.push(
-          `/audit/${auditId}`
-        );
-
-      } catch (err) {
-
-        console.error(
-          err
-        );
-
-        setShowLeadModal(
-          false
-        );
-      }
-    };
+      console.error(err);
+      setShowLeadModal(false);
+    }
+  };
 
   return {
-
     step,
     setStep,
-
     formData,
     setFormData,
-
     auditResult,
-
     showLeadModal,
     setShowLeadModal,
-
     startAudit,
-
     submitLead,
   };
 }

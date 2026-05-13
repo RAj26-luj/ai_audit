@@ -1,5 +1,6 @@
-// mouse and animation logic
+//landing effects
 import { useRef, useState } from "react";
+
 import {
   useMotionValue,
   useSpring,
@@ -11,7 +12,7 @@ export function useLandingEffects() {
   const containerRef =
     useRef<HTMLDivElement | null>(null);
 
-  // mouse values
+  //mouse values
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
@@ -25,7 +26,7 @@ export function useLandingEffects() {
     damping: 20,
   });
 
-  // tilt effect
+  //tilt effect
   const rotateX = useTransform(
     mouseYSpring,
     [-0.5, 0.5],
@@ -38,17 +39,14 @@ export function useLandingEffects() {
     ["-10deg", "10deg"]
   );
 
-  // spotlight
+  //spotlight
   const [spotlightPos, setSpotlightPos] =
-    useState({
-      x: 0,
-      y: 0,
-    });
+    useState({ x: 0, y: 0 });
 
   const [isHovering, setIsHovering] =
     useState(false);
 
-  // mouse move
+  //mouse move
   const handleMouseMove = (
     e: React.MouseEvent<HTMLDivElement>
   ) => {
@@ -81,7 +79,7 @@ export function useLandingEffects() {
     setIsHovering(true);
   };
 
-  // reset
+  //reset effect
   const handleMouseLeave = () => {
 
     x.set(0);

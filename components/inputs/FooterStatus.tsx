@@ -1,4 +1,4 @@
-// footer status text
+//footer status
 export default function FooterStatus() {
 
   return (
@@ -7,6 +7,7 @@ export default function FooterStatus() {
       <div className="w-2 h-2 rounded-full bg-green-500" />
 
       Inventory encrypted locally
+
     </div>
   );
 }

@@ -1,157 +1,10 @@
-import Link from "next/link";
-
-import {
-  ArrowLeft,
-  Sparkles,
-} from "lucide-react";
-
-import { supabase } from "@/lib/supabase";
-
 import InteractiveOptimizer from "@/components/optimization/InteractiveOptimizer";
 
-const demoData = {
+import PageHeader from "./components/PageHeader";
 
-  id: "demo",
+import NotFoundState from "./components/NotFoundState";
 
-  totalMonthlySpend: 1240,
-
-  optimizedSpend: 820,
-
-  monthlySavings: 420,
-
-  yearlySavings: 5040,
-
-  optimizationScore: 72,
-
-  productivityRisk: "Low",
-
-  recommendations: [
-
-    {
-      id:
-        "cursor-downgrade",
-
-      title:
-        "Downgrade Cursor Plan",
-
-      description:
-        "Cursor Business is likely unnecessary for a small engineering team.",
-
-      savings:
-        120,
-
-      productivityRisk:
-        "Low",
-
-      warning:
-        "Downgrading too aggressively may remove advanced collaboration functionality.",
-
-      action: {
-
-        type:
-          "downgrade_plan",
-
-        tool:
-          "Cursor",
-
-        currentPlan:
-          "Business",
-
-        recommendedPlan:
-          "Pro",
-      },
-    },
-
-    {
-      id:
-        "reduce-seats",
-
-      title:
-        "Reduce Unused Seats",
-
-      description:
-        "Several subscriptions currently exceed active allocation requirements.",
-
-      savings:
-        50,
-
-      productivityRisk:
-        "Medium",
-
-      warning:
-        "Reducing too many seats can impact scaling and onboarding.",
-
-      action: {
-
-        type:
-          "reduce_seats",
-
-        tool:
-          "ChatGPT",
-
-        currentSeats:
-          4,
-
-        recommendedSeats:
-          2,
-      },
-    },
-  ],
-
-  tools: [
-
-    {
-      id:
-        "cursor",
-
-      name:
-        "Cursor",
-
-      plan:
-        "Business",
-
-      pricePerSeat:
-        40,
-
-      seats:
-        3,
-    },
-
-    {
-      id:
-        "chatgpt",
-
-      name:
-        "ChatGPT",
-
-      plan:
-        "Team",
-
-      pricePerSeat:
-        25,
-
-      seats:
-        4,
-    },
-
-    {
-      id:
-        "claude",
-
-      name:
-        "Claude",
-
-      plan:
-        "Max",
-
-      pricePerSeat:
-        100,
-
-      seats:
-        1,
-    },
-  ],
-};
+import getAuditResult from "./utils/getAuditResult";
 
 type Props = {
   params: Promise<{
@@ -166,43 +19,18 @@ export default async function OptimizePage({
   const { id } =
     await params;
 
-  let result: any;
+  const {
+    result,
+    error,
+  } =
+    await getAuditResult(id);
 
-  if (id === "demo") {
+  if (
+    error ||
+    !result
+  ) {
 
-    result =
-      demoData;
-
-  } else {
-
-    const {
-      data,
-      error,
-    } =
-      await supabase
-        .from("audits")
-        .select("*")
-        .eq("id", id)
-        .single();
-
-    if (
-      error ||
-      !data
-    ) {
-
-      return (
-        <div className="min-h-screen bg-[#020205] text-white flex items-center justify-center text-3xl font-black">
-
-          Optimization Report Not Found
-
-        </div>
-      );
-    }
-
-    result = {
-      ...data.result,
-      id,
-    };
+    return <NotFoundState />;
   }
 
   return (
@@ -211,32 +39,9 @@ export default async function OptimizePage({
 
       <div className="max-w-7xl mx-auto">
 
-        <div className="flex items-center justify-between mb-10">
-
-          <Link
-            href={
-              id === "demo"
-                ? "/demo"
-                : `/audit/${id}`
-            }
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition"
-          >
-
-            <ArrowLeft size={18} />
-
-            Back to Audit
-
-          </Link>
-
-          <div className="flex items-center gap-2 text-indigo-400 text-sm font-semibold">
-
-            <Sparkles size={16} />
-
-            Interactive Optimization Engine
-
-          </div>
-
-        </div>
+        <PageHeader
+          id={id}
+        />
 
         <div className="mt-10">
 
@@ -249,6 +54,5 @@ export default async function OptimizePage({
       </div>
 
     </div>
-
   );
 }

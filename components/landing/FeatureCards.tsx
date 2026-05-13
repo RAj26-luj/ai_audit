@@ -1,14 +1,15 @@
 "use client";
 
-// feature cards section
-
+//feature cards
 import { motion } from "framer-motion";
+
 import {
   TrendingDown,
   ShieldCheck,
   Zap,
 } from "lucide-react";
 
+//cards data
 const cards = [
   {
     icon: <TrendingDown size={24} />,
@@ -32,13 +33,16 @@ const cards = [
   },
 ];
 
+//feature section
 export default function FeatureCards() {
 
+  //scroll feature
   const handleFeatureClick = (feature: string) => {
 
     localStorage.setItem("selectedFeature", feature);
 
-    const section = document.getElementById("audit-form");
+    const section =
+      document.getElementById("audit-form");
 
     if (section) {
       section.scrollIntoView({
@@ -58,40 +62,33 @@ export default function FeatureCards() {
 
           onClick={() => handleFeatureClick(item.feature)}
 
-          whileHover={{
-            y: -10,
-            scale: 1.02,
-          }}
+          whileHover={{ y: -10, scale: 1.02 }}
 
-          whileTap={{
-            scale: 0.98,
-          }}
+          whileTap={{ scale: 0.98 }}
 
           className="p-8 rounded-3xl bg-white/[0.03] border border-white/5 text-left transition-all duration-300 hover:border-indigo-500/30 hover:bg-white/[0.05] cursor-pointer"
         >
 
           <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-indigo-400 mb-6">
-
             {item.icon}
           </div>
 
           <h3 className="text-xl font-bold text-white mb-3">
-
             {item.title}
           </h3>
 
           <p className="text-gray-500 leading-relaxed">
-
             {item.desc}
           </p>
 
           <div className="mt-6 text-indigo-400 text-sm font-medium">
-
             Explore feature →
           </div>
 
         </motion.button>
+
       ))}
+
     </div>
   );
 }

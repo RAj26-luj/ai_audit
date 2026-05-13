@@ -2,49 +2,50 @@
 
 ## Hero Headline
 
-Stop Overpaying For AI Tools
+Stop Overpaying for AI Tools
 
 ---
 
 ## Subheadline
 
-Audit your AI stack, detect waste, and discover cheaper alternatives in minutes.
+Audit your AI stack, detect unnecessary spend, and identify optimization opportunities in minutes.
 
 ---
 
-## Primary CTA
+## Primary Call to Action
 
 Start Free AI Audit
 
 ---
 
-## Social Proof (Mocked)
+## Social Proof
 
-> Mocked examples for product positioning only.
+These are illustrative examples used for positioning:
 
-- “We discovered nearly $900/month in unnecessary AI spend.” — Early Startup Team
-- “The overlap detection alone was worth it.” — Technical Founder
-- “This gave us the first real visibility into our AI tooling costs.” — Engineering Manager
-
----
-
-## FAQ
-
-### 1. What does StackAudit actually do?
-
-StackAudit analyzes your AI subscriptions, estimates unnecessary spending, and recommends better pricing or tooling options.
+- “We discovered nearly $900/month in unnecessary AI spend.” — Early-stage startup team
+- “The overlap detection alone was immediately useful.” — Technical founder
+- “This gave us clear visibility into our AI tooling costs for the first time.” — Engineering manager
 
 ---
 
-### 2. Do I need to create an account first?
+## Frequently Asked Questions
 
-No. The audit works immediately without login. Email capture happens only after value is shown.
+### 1. What does StackAudit do?
+
+StackAudit analyzes your AI subscriptions, identifies inefficient spending, and suggests cost optimizations based on pricing and usage patterns.
 
 ---
 
-### 3. Which AI tools are supported?
+### 2. Do I need an account to use it?
 
-The audit currently supports tools like:
+No. You can run an audit immediately without signing up. Email capture is introduced only after the results are shown.
+
+---
+
+### 3. Which tools are supported?
+
+The system currently supports common AI tools including:
+
 - Cursor
 - ChatGPT
 - Claude
@@ -57,10 +58,12 @@ The audit currently supports tools like:
 
 ### 4. Are the recommendations AI-generated?
 
-The financial calculations and recommendations are rule-based for consistency. AI is used only for executive summaries.
+The financial logic and recommendations are rule-based to ensure consistency and accuracy.
+
+AI is used only to generate readable summaries of the results.
 
 ---
 
 ### 5. Why is this free?
 
-The tool acts as a lead-generation product for Credex by identifying companies that may benefit from AI infrastructure optimization.
+The tool is designed as a lead-generation product for Credex, helping identify companies that may benefit from AI infrastructure optimization services.

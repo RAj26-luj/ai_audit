@@ -4,9 +4,9 @@
 
 The primary metric for StackAudit is:
 
-**Completed audits per week that capture a lead**
+**Completed audits per week that result in a captured lead**
 
-This metric matters because the product is fundamentally a lead-generation tool for Credex. A completed audit alone is not valuable unless the user also shares contact information after receiving value from the report.
+This metric is critical because StackAudit is fundamentally a lead-generation product for Credex. A completed audit alone is not sufficient value unless it converts into a meaningful business signal (a lead).
 
 ---
 
@@ -14,44 +14,48 @@ This metric matters because the product is fundamentally a lead-generation tool 
 
 ### 1. Audit Completion Rate
 
-Percentage of users who finish the full audit flow after landing on the site.
+The percentage of users who complete the full audit flow after landing on the product.
 
 This measures:
+
 - onboarding clarity
-- UX quality
-- form friction
-- perceived value
+- user experience friction
+- perceived value of the audit
+- effectiveness of the input flow
 
 ---
 
 ### 2. Lead Capture Rate
 
-Percentage of completed audits that convert into captured leads.
+The percentage of completed audits that result in a captured lead.
 
-This measures:
-- trust in the product
-- perceived usefulness
-- report quality
-- effectiveness of the value-before-email flow
+This reflects:
+
+- user trust in the output
+- perceived usefulness of recommendations
+- strength of the value-before-email model
+- clarity of the final report
 
 ---
 
 ### 3. Share Rate
 
-Percentage of audits shared publicly through the generated report URL.
+The percentage of audits shared via the generated report link.
 
-This measures:
+This indicates:
+
 - virality potential
-- screenshot/share quality
-- usefulness of the final report
+- perceived usefulness of results
+- quality of insights presented in the report
+- organic distribution strength
 
 ---
 
-## What I Would Instrument First
+## Core Product Events
 
-The first analytics events I would track:
+The first analytics events to instrument:
 
-- landing page visits
+- landing page view
 - audit started
 - audit completed
 - lead submitted
@@ -59,16 +63,28 @@ The first analytics events I would track:
 - PDF exported
 - Credex CTA clicked
 
-These events provide visibility into the full conversion funnel.
+These events provide full-funnel visibility from acquisition to conversion.
 
 ---
 
-## Pivot Decision
+## Product Health Signals
 
-A pivot would be considered if:
-- audit completion rate stays below 25%
+Strong product health is indicated by:
+
+- high audit completion rate
+- consistent lead conversion after audit completion
+- organic sharing of reports
+- repeat audits from the same users or teams
+
+---
+
+## Pivot Triggers
+
+A pivot or major redesign should be considered if:
+
+- audit completion rate remains below 25%
 - lead conversion remains below 10%
-- users complete audits but do not share reports
-- optimization recommendations fail to produce meaningful savings
+- users complete audits but do not share results
+- recommendations fail to demonstrate meaningful perceived savings
 
-This would suggest the product is not generating enough real value for users.
+These signals would indicate weak product value or unclear positioning.

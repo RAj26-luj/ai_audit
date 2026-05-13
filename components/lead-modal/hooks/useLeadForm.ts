@@ -1,33 +1,22 @@
-// form state and submit logic
-
+//lead form
 import { useState } from "react";
 
+//form logic
 export function useLeadForm(
   onSubmit: any,
   onClose: () => void
 ) {
 
-  const [email, setEmail] =
-    useState("");
+  const [email, setEmail] = useState("");
+  const [company, setCompany] = useState("");
+  const [role, setRole] = useState("");
 
-  const [company, setCompany] =
-    useState("");
+  const [teamSize, setTeamSize] = useState(10);
 
-  const [role, setRole] =
-    useState("");
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
-  const [
-    teamSize,
-    setTeamSize,
-  ] = useState(10);
-
-  const [loading, setLoading] =
-    useState(false);
-
-  const [success, setSuccess] =
-    useState(false);
-
-  // form submit
+  //submit form
   const handleSubmit = async (
     e: React.FormEvent
   ) => {
@@ -62,21 +51,11 @@ export function useLeadForm(
   };
 
   return {
-    email,
-    setEmail,
-
-    company,
-    setCompany,
-
-    role,
-    setRole,
-
-    teamSize,
-    setTeamSize,
-
-    loading,
-    success,
-
+    email, setEmail,
+    company, setCompany,
+    role, setRole,
+    teamSize, setTeamSize,
+    loading, success,
     handleSubmit,
   };
 }

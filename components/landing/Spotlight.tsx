@@ -1,5 +1,4 @@
-// mouse spotlight effect
-
+//spotlight
 type Props = {
   spotlightPos: {
     x: number;
@@ -9,6 +8,7 @@ type Props = {
   isHovering: boolean;
 };
 
+//mouse glow
 export default function Spotlight({
   spotlightPos,
   isHovering,

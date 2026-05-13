@@ -1,52 +1,36 @@
-// bottom badges
+//loading bg
+import { motion } from "framer-motion";
 
-import {
-  ShieldCheck,
-  Database,
-  Search,
-} from "lucide-react";
-
-const badges = [
-  {
-    icon: <ShieldCheck className="w-5 h-5" />,
-    label: "Secure",
-  },
-
-  {
-    icon: <Database className="w-5 h-5" />,
-    label: "Encrypted",
-  },
-
-  {
-    icon: <Search className="w-5 h-5" />,
-    label: "Detailed",
-  },
-];
-
-export default function LoadingBadges() {
+//animated bg
+export default function LoadingBackground() {
 
   return (
-    <div className="mt-14 flex gap-10">
+    <>
 
-      {badges.map((item, index) => (
+      {/* blobs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
 
-        <div
-          key={index}
+        <motion.div
+          animate={{ scale: [1, 1.2, 1], opacity: [0.08, 0.15, 0.08] }}
 
-          className="flex flex-col items-center gap-2 opacity-50"
-        >
+          transition={{ duration: 8, repeat: Infinity }}
 
-          <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-indigo-400">
+          className="absolute -top-32 -left-32 w-[500px] h-[500px] bg-indigo-600 rounded-full blur-[140px]"
+        />
 
-            {item.icon}
-          </div>
+        <motion.div
+          animate={{ scale: [1, 1.3, 1], opacity: [0.06, 0.12, 0.06] }}
 
-          <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-500">
+          transition={{ duration: 10, repeat: Infinity }}
 
-            {item.label}
-          </span>
-        </div>
-      ))}
-    </div>
+          className="absolute -bottom-32 -right-32 w-[500px] h-[500px] bg-purple-600 rounded-full blur-[160px]"
+        />
+
+      </div>
+
+      {/* grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
+
+    </>
   );
 }

@@ -1,10 +1,10 @@
-// first screen for tool selection
+//tool selection
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+
 import { TOOLS_CONFIG } from "@/data/tools";
 
 import SectionHeader from "../section-header/SectionHeader";
-
 import ToolCard from "../tool-card/ToolCard";
 
 import type {
@@ -21,6 +21,7 @@ type Props = {
   goNext: () => void;
 };
 
+//selection step
 export default function SelectionStep({
   formData,
   toggleTool,
@@ -38,24 +39,21 @@ export default function SelectionStep({
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
-        {TOOLS_CONFIG.map(
-          (tool, index) => (
+        {TOOLS_CONFIG.map((tool, index) => (
 
-            <ToolCard
-              key={tool.id}
+          <ToolCard
+            key={tool.id}
 
-              tool={tool}
+            tool={tool}
+            index={index}
 
-              index={index}
+            isSelected={formData.selectedTools.includes(tool.id)}
 
-              isSelected={formData.selectedTools.includes(
-                tool.id
-              )}
+            toggleTool={toggleTool}
+          />
 
-              toggleTool={toggleTool}
-            />
-          )
-        )}
+        ))}
+
       </div>
 
       <div className="mt-14 flex justify-center">
@@ -73,8 +71,11 @@ export default function SelectionStep({
           Configure Details
 
           <ArrowRight size={20} />
+
         </motion.button>
+
       </div>
+
     </motion.div>
   );
 }

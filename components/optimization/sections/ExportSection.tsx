@@ -1,101 +1,61 @@
 "use client";
 
-import {
-  Download,
-  ShieldCheck,
-  FileText,
-} from "lucide-react";
+import { Download, ShieldCheck, FileText } from "lucide-react";
 
 interface Props {
   onExport: () => void;
 }
 
-export default function ExportSection({
-  onExport,
-}: Props) {
+export default function ExportSection({ onExport }: Props) {
 
   return (
+    <section className="mt-3">
 
-    <section className="mt-4">
+      {/* container */}
+      <div className="relative overflow-hidden rounded-2xl border border-indigo-500/10 bg-slate-900/60 px-5 py-4">
 
-      <div className="relative overflow-hidden rounded-2xl border border-indigo-500/10 bg-slate-900/60 px-6 py-5 glass card-shadow">
+        {/* glow */}
+        <div className="absolute right-0 top-0 h-32 w-32 bg-indigo-500/10 blur-3xl rounded-full pointer-events-none" />
 
-        {/* BACKGROUND GLOW */}
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 
-        <div className="absolute right-0 top-0 h-40 w-40 bg-indigo-500/10 blur-3xl rounded-full pointer-events-none" />
+          {/* left */}
+          <div className="flex items-start gap-3">
 
-        {/* CONTENT */}
-
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
-
-          {/* LEFT */}
-
-          <div className="flex items-start gap-4">
-
-            <div className="w-14 h-14 rounded-2xl bg-indigo-500/15 border border-indigo-500/20 flex items-center justify-center shrink-0">
-
-              <FileText
-                className="text-indigo-300"
-                size={24}
-              />
-
+            <div className="w-12 h-12 rounded-xl bg-indigo-500/15 border border-indigo-500/20 flex items-center justify-center shrink-0">
+              <FileText className="text-indigo-300" size={20} />
             </div>
 
-            <div className="max-w-2xl">
-
-              <h2 className="text-2xl font-black text-white leading-tight">
-
-                Export Optimization Report
-
+            <div>
+              <h2 className="text-xl font-black text-white">
+                Export Report
               </h2>
-
-              <p className="text-sm text-slate-400 mt-1 leading-relaxed">
-
-                Download a professional PDF containing savings analysis,
-                recommendations, optimization settings, and productivity impact insights.
-
+              <p className="text-xs text-slate-400 mt-1">
+                Download PDF with full optimization insights
               </p>
-
             </div>
 
           </div>
 
-          {/* RIGHT */}
-
+          {/* right */}
           <div className="flex items-center gap-3">
 
             <button
               onClick={onExport}
-              className="h-12 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-400 transition-all duration-300 flex items-center gap-2 text-sm font-bold text-white shadow-lg shadow-indigo-500/20"
+              className="h-11 px-4 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-sm font-bold text-white flex items-center gap-2"
             >
-
-              <Download size={17} />
-
-              Export PDF
-
+              <Download size={16} />
+              Export
             </button>
 
-            <div className="hidden md:flex items-center gap-3 rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-2.5">
+            {/* trust badge */}
+            <div className="hidden md:flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-700 bg-slate-950/60">
 
-              <ShieldCheck
-                className="text-emerald-300"
-                size={18}
-              />
+              <ShieldCheck className="text-emerald-300" size={16} />
 
-              <div>
-
-                <p className="text-sm font-semibold text-white">
-
-                  Enterprise Ready
-
-                </p>
-
-                <p className="text-[11px] text-slate-500">
-
-                  Executive-style export
-
-                </p>
-
+              <div className="leading-tight">
+                <p className="text-xs font-semibold text-white">Ready</p>
+                <p className="text-[10px] text-slate-500">Enterprise PDF</p>
               </div>
 
             </div>
@@ -103,7 +63,6 @@ export default function ExportSection({
           </div>
 
         </div>
-
       </div>
 
     </section>

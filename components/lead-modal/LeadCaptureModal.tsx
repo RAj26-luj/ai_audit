@@ -1,7 +1,6 @@
 "use client";
 
-// main modal wrapper
-
+//lead modal
 import { AnimatePresence } from "framer-motion";
 
 import ModalWrapper from "./ModalWrapper";
@@ -33,6 +32,7 @@ type Props = {
   }) => Promise<void>;
 };
 
+//modal wrapper
 export default function LeadCaptureModal({
   open,
   onClose,
@@ -42,18 +42,10 @@ export default function LeadCaptureModal({
 }: Props) {
 
   const {
-    email,
-    setEmail,
-
-    company,
-    setCompany,
-
-    role,
-    setRole,
-
-    loading,
-    success,
-
+    email, setEmail,
+    company, setCompany,
+    role, setRole,
+    loading, success,
     handleSubmit,
   } = useLeadForm(
     onSubmit,
@@ -61,7 +53,6 @@ export default function LeadCaptureModal({
   );
 
   return (
-
     <AnimatePresence>
 
       {open && (
@@ -80,20 +71,13 @@ export default function LeadCaptureModal({
               role={role}
               setRole={setRole}
 
-              teamSize={
-                formData.teamSize
-              }
+              teamSize={formData.teamSize}
 
-              setTeamSize={(
-                value: number
-              ) =>
-                setFormData(
-                  (prev) => ({
-                    ...prev,
-                    teamSize:
-                      value,
-                  })
-                )
+              setTeamSize={(value: number) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  teamSize: value,
+                }))
               }
 
               loading={loading}

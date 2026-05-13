@@ -1,51 +1,71 @@
 # Agents
 
+This document describes the core system components that power StackAudit.  
+While they are referred to as agents, most of the current implementation is rule-based and deterministic to ensure consistency, explainability, and stable financial outputs.
+
+---
+
 ## Audit Engine
 
-The audit engine is responsible for:
-- analyzing AI tool stacks
-- calculating monthly and yearly spend
-- detecting overlap between tools
-- generating optimization recommendations
-- estimating productivity risk
+The Audit Engine is the core system responsible for analyzing an AI tool stack and producing structured optimization insights.
 
-The current implementation is primarily rule-based for deterministic outputs.
+It handles:
+
+- Calculating monthly and yearly spend across tools
+- Detecting inefficiencies such as overlapping tools, underutilized seats, and inefficient plans
+- Generating optimization recommendations based on rule-based logic
+- Estimating productivity risk when changes are applied
+
+The implementation is intentionally rule-based so that outputs remain:
+- deterministic
+- explainable
+- consistent across runs
+
+This is important because financial recommendations need to be predictable and auditable.
 
 ---
 
 ## AI Summary Agent
 
-The AI summary system generates short executive summaries for audit reports.
+The AI Summary Agent converts structured audit results into human-readable summaries.
 
-Responsibilities:
-- summarize savings opportunities
-- explain optimization recommendations
-- generate readable business-focused insights
+Its role is limited to narration and explanation, not decision-making.
 
-Fallback summaries are used when external AI APIs fail.
+It is responsible for:
+- summarizing key savings opportunities
+- explaining optimization results in simple business language
+- generating executive-friendly summaries from structured data
+
+If external AI services fail, the system falls back to predefined templates to ensure reliability.
 
 ---
 
 ## Recommendation Logic
 
-Recommendation generation currently supports:
-- plan downgrade suggestions
-- seat reduction suggestions
-- overlap detection
-- savings calculations
+The recommendation system generates actionable optimization suggestions based on detected inefficiencies.
 
-Future versions may support:
-- usage-aware recommendations
-- benchmark-based optimization
-- organization-wide analysis
+It currently supports:
+
+- plan downgrade recommendations (for cost optimization)
+- seat reduction suggestions for underutilized tools
+- tool overlap detection and consolidation opportunities
+- estimated monthly and yearly savings per recommendation
+
+Each recommendation is designed to be:
+- traceable to a specific rule
+- tied to a measurable cost impact
+- understandable without technical knowledge
 
 ---
 
 ## Future Agent Ideas
 
-Potential future agents:
-- benchmarking agent
-- AI ROI analysis agent
-- seat utilization agent
-- pricing trend analysis agent
-- subscription anomaly detection
+Planned improvements include additional intelligence layers such as:
+
+- benchmarking across similar companies
+- AI ROI analysis comparing cost vs productivity impact
+- seat utilization analysis based on usage behavior
+- pricing trend tracking across tools and vendors
+- anomaly detection for unusual spending patterns
+
+These enhancements will gradually move the system from rule-based optimization toward adaptive, usage-aware financial intelligence.
