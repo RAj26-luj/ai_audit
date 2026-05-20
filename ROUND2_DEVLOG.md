@@ -1,13 +1,20 @@
-## 2026-05-20 10:45 — Started Round 2
+## Hour 1 — Persistence setup
 
-Reviewed assignment requirements.
-Planned implementation before coding.
-Goal: minimal reliable end-to-end re-audit flow.
-## Re-audit system progress
+Added persistent audit storage using Supabase.
+Stored pricing snapshots together with audit results.
 
-- Added persistent audit storage with Supabase
-- Stored pricing snapshots for comparison
-- Added detect-changes API route
-- Added compare page
-- Integrated Resend email flow
-- Used manual trigger endpoint instead of cron
+## Hour 1.5 — Re-audit detection flow
+
+Implemented detect-changes API endpoint.
+Used snapshot comparison approach for simple deterministic change detection.
+
+## Hour 2 — Compare page
+
+Built compare page for historical audit recommendations.
+Focused on readable recommendation comparison instead of complex diff visualizations.
+
+## Hour 2.5 — Production stabilization
+
+Integrated Resend email flow.
+Resolved deployment/build issues related to server-side initialization.
+Verified local and production builds.
