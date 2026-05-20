@@ -1,7 +1,7 @@
 # Round 2 — Persistent Re-Audit System
 
 ## What this PR does
-
+Focused on shipping a reliable end-to-end re-audit workflow by incrementally extending the existing Round 1 architecture instead of introducing new infrastructure.
 This PR adds a persistent AI audit re-check system to StackAudit.
 
 The system now:
