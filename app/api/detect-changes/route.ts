@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 
 import { supabase } from "@/lib/supabase";
 import { TOOLS_CONFIG } from "@/data/tools";
+import { sendAuditEmail }
+from "@/lib/email/sendAuditEmail";
 
 export async function POST() {
 
@@ -31,7 +33,13 @@ export async function POST() {
         );
 
       if(oldPricing !== currentPricing){
+        if(audit.email){
 
+        await sendAuditEmail({
+        to:audit.email,
+        auditId:audit.id,
+        });
+}
         changedAudits.push({
           auditId:audit.id,
           email:audit.email,

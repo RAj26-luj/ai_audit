@@ -22,7 +22,7 @@ export const TOOLS_CONFIG: ToolType[] = [
 
     basePrice: {
       Hobby: 0,
-      Pro: 20,
+      Pro: 25,
       Business: 40,
       Enterprise: 100,
     },
