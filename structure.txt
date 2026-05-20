@@ -1,0 +1,296 @@
+.
+├── AGENTS.md
+├── ARCHITECTURE.md
+├── CLAUDE.md
+├── DEVLOG.md
+├── ECONOMICS.md
+├── GTM.md
+├── LANDING_COPY.md
+├── METRICS.md
+├── PRICING_DATA.md
+├── PROMPTS.md
+├── README.md
+├── REFLECTION.md
+├── TESTS.md
+├── USER_INTERVIEWS.md
+├── app
+│   ├── api
+│   │   ├── optimize
+│   │   │   ├── constants
+│   │   │   │   └── devTools.ts
+│   │   │   ├── engine
+│   │   │   │   ├── AIAuditEngine.ts
+│   │   │   │   └── calculateOptimizationScore.ts
+│   │   │   ├── helpers
+│   │   │   │   ├── calcMonthlySpend.ts
+│   │   │   │   └── isDevTool.ts
+│   │   │   ├── route.ts
+│   │   │   ├── rules
+│   │   │   │   ├── EnterpriseMisuseRule.ts
+│   │   │   │   ├── PlanDowngradeRule.ts
+│   │   │   │   ├── SeatUtilizationRule.ts
+│   │   │   │   └── ToolOverlapRule.ts
+│   │   │   ├── types
+│   │   │   │   ├── AuditInput.ts
+│   │   │   │   ├── AuditRule.ts
+│   │   │   │   ├── Recommendation.ts
+│   │   │   │   └── Tool.ts
+│   │   │   └── utils
+│   │   │       ├── applyRecommendations.ts
+│   │   │       ├── calculateBenchmarks.ts
+│   │   │       └── calculateRisk.ts
+│   │   └── summary
+│   │       ├── constants
+│   │       │   └── models.ts
+│   │       ├── prompts
+│   │       │   └── buildSummaryPrompt.ts
+│   │       ├── route.ts
+│   │       ├── services
+│   │       │   ├── generateSummary.ts
+│   │       │   └── openrouter.ts
+│   │       └── utils
+│   │           └── fallbackSummary.ts
+│   ├── audit
+│   │   └── [id]
+│   │       ├── components
+│   │       │   └── AuditNotFound.tsx
+│   │       ├── data
+│   │       │   └── demoAudit.ts
+│   │       ├── page.tsx
+│   │       └── utils
+│   │           ├── getAudit.ts
+│   │           └── normalizeAudit.ts
+│   ├── demo
+│   │   ├── data
+│   │   │   └── demoAudit.ts
+│   │   └── page.tsx
+│   ├── favicon.ico
+│   ├── globals.css
+│   ├── layout.tsx
+│   ├── optimize
+│   │   └── [id]
+│   │       ├── components
+│   │       │   ├── NotFoundState.tsx
+│   │       │   └── PageHeader.tsx
+│   │       ├── data
+│   │       │   └── demoData.ts
+│   │       ├── page.tsx
+│   │       └── utils
+│   │           └── getAuditResult.ts
+│   └── page.tsx
+├── components
+│   ├── inputs
+│   │   ├── AuditButton.tsx
+│   │   ├── BackButton.tsx
+│   │   ├── DetailsStep.tsx
+│   │   ├── FooterStatus.tsx
+│   │   ├── Inputs.tsx
+│   │   ├── SelectionStep.tsx
+│   │   ├── details
+│   │   │   ├── DetailsFormSection.tsx
+│   │   │   ├── TeamSizeInput.tsx
+│   │   │   ├── UseCaseSelect.tsx
+│   │   │   └── ValidationError.tsx
+│   │   └── hooks
+│   │       └── useToolSelection.ts
+│   ├── landing
+│   │   ├── BackgroundEffects.tsx
+│   │   ├── FeatureCards.tsx
+│   │   ├── FooterHint.tsx
+│   │   ├── HeroSection.tsx
+│   │   ├── Landing.tsx
+│   │   ├── Spotlight.tsx
+│   │   └── hooks
+│   │       └── useLandingEffects.ts
+│   ├── lead-modal
+│   │   ├── FormInput.tsx
+│   │   ├── LeadCaptureModal.tsx
+│   │   ├── LeadForm.tsx
+│   │   ├── ModalWrapper.tsx
+│   │   ├── SubmitButton.tsx
+│   │   ├── SuccessMessage.tsx
+│   │   └── hooks
+│   │       └── useLeadForm.ts
+│   ├── loading
+│   │   ├── Loading.tsx
+│   │   ├── LoadingBackground.tsx
+│   │   ├── LoadingBadges.tsx
+│   │   ├── LoadingCore.tsx
+│   │   ├── LoadingStatus.tsx
+│   │   └── hooks
+│   │       └── useLoadingStatus.ts
+│   ├── navbar
+│   │   ├── CredexButton.tsx
+│   │   ├── Logo.tsx
+│   │   ├── MobileMenuButton.tsx
+│   │   ├── NavLinks.tsx
+│   │   ├── Navbar.tsx
+│   │   └── constants.ts
+│   ├── optimization
+│   │   ├── InteractiveOptimizer.tsx
+│   │   ├── alerts
+│   │   │   └── RecommendationWarning.tsx
+│   │   ├── badges
+│   │   │   └── RecommendationBadges.tsx
+│   │   ├── cards
+│   │   │   ├── EditableToolCard.tsx
+│   │   │   ├── RecommendationCard.tsx
+│   │   │   ├── recommendation
+│   │   │   │   ├── RecommendationDescription.tsx
+│   │   │   │   ├── RecommendationHeader.tsx
+│   │   │   │   ├── RecommendationSavings.tsx
+│   │   │   │   ├── RecommendationToggle.tsx
+│   │   │   │   └── RecommendationWarning.tsx
+│   │   │   └── sections
+│   │   │       ├── PlanSelector.tsx
+│   │   │       ├── ProductivityWarning.tsx
+│   │   │       ├── SeatsInput.tsx
+│   │   │       ├── ToolCardFooter.tsx
+│   │   │       ├── ToolCardHeader.tsx
+│   │   │       └── ToolSelector.tsx
+│   │   ├── components
+│   │   │   ├── OptimizationToolbar.tsx
+│   │   │   └── OptimizedEmptyState.tsx
+│   │   ├── controls
+│   │   │   ├── PlanControl.tsx
+│   │   │   └── SeatControl.tsx
+│   │   ├── data
+│   │   │   └── mockAudit.ts
+│   │   ├── hooks
+│   │   │   └── useOptimizer.ts
+│   │   ├── items
+│   │   │   └── RecommendationItem.tsx
+│   │   ├── pdf
+│   │   │   ├── PDFReport.tsx
+│   │   │   └── sections
+│   │   │       ├── PDFExecutiveSummary.tsx
+│   │   │       ├── PDFFooter.tsx
+│   │   │       ├── PDFHeader.tsx
+│   │   │       ├── PDFMetrics.tsx
+│   │   │       ├── PDFRecommendations.tsx
+│   │   │       └── PDFStackTable.tsx
+│   │   ├── sections
+│   │   │   ├── ExportSection.tsx
+│   │   │   ├── HeroSection.tsx
+│   │   │   ├── RecommendationsSection.tsx
+│   │   │   ├── StackBreakdownSection.tsx
+│   │   │   ├── StackSection.tsx
+│   │   │   └── StatsSection.tsx
+│   │   ├── services
+│   │   │   └── optimizeAudit.ts
+│   │   ├── types
+│   │   │   └── index.ts
+│   │   └── utils
+│   │       └── exportPDF.ts
+│   ├── results
+│   │   ├── AuditNotice.tsx
+│   │   ├── BenchmarkInsights.tsx
+│   │   ├── EmptyState.tsx
+│   │   ├── ExecutiveSummary.tsx
+│   │   ├── ExportPDFButton.tsx
+│   │   ├── OptimizationCTA.tsx
+│   │   ├── OptimizationScore.tsx
+│   │   ├── PrintableReport.tsx
+│   │   ├── Recommendations.tsx
+│   │   ├── Results.tsx
+│   │   ├── ResultsHeader.tsx
+│   │   ├── ShareButton.tsx
+│   │   ├── SpendAnalysis.tsx
+│   │   ├── StatCard.tsx
+│   │   ├── StatsGrid.tsx
+│   │   ├── benchmark
+│   │   │   ├── BenchmarkHeader.tsx
+│   │   │   ├── HealthSummary.tsx
+│   │   │   ├── MetricCard.tsx
+│   │   │   ├── OptimizationAnalysis.tsx
+│   │   │   └── ProgressMetric.tsx
+│   │   ├── export-pdf
+│   │   │   ├── ExportButtonContent.tsx
+│   │   │   └── usePrintReport.ts
+│   │   ├── optimization-cta
+│   │   │   ├── CTAHeader.tsx
+│   │   │   ├── OptimizationPreview.tsx
+│   │   │   ├── RiskWarning.tsx
+│   │   │   ├── SavingsCard.tsx
+│   │   │   └── ToggleButton.tsx
+│   │   ├── printable-report
+│   │   │   ├── ExecutiveSummary.tsx
+│   │   │   ├── FinancialOverview.tsx
+│   │   │   ├── RecommendationsList.tsx
+│   │   │   ├── ReportFooter.tsx
+│   │   │   ├── ReportHeader.tsx
+│   │   │   └── TopStats.tsx
+│   │   ├── recommendations
+│   │   │   ├── RecommendationFooter.tsx
+│   │   │   ├── RecommendationHeader.tsx
+│   │   │   ├── RecommendationItem.tsx
+│   │   │   ├── RecommendationRisk.tsx
+│   │   │   └── RecommendationWarning.tsx
+│   │   └── results-page
+│   │       ├── HeroSection.tsx
+│   │       ├── LeftPanel.tsx
+│   │       ├── OptimizedNotice.tsx
+│   │       └── RightPanel.tsx
+│   ├── section-header
+│   │   ├── HeaderBadge.tsx
+│   │   ├── HeaderTitle.tsx
+│   │   └── SectionHeader.tsx
+│   ├── tool-card
+│   │   ├── SelectedBadge.tsx
+│   │   ├── ToolCard.tsx
+│   │   ├── ToolIcon.tsx
+│   │   └── ToolText.tsx
+│   ├── tool-details
+│   │   ├── FieldLabel.tsx
+│   │   ├── ToolDetailsCard.tsx
+│   │   ├── ToolHeader.tsx
+│   │   ├── ToolPlanSelect.tsx
+│   │   ├── ToolSeatsInput.tsx
+│   │   └── ToolSpendInput.tsx
+│   └── ui
+│       └── button.tsx
+├── components.json
+├── data
+│   └── tools.ts
+├── eslint.config.mjs
+├── hooks
+│   └── useHomeAudit.ts
+├── jest.config.js
+├── lib
+│   ├── supabase.ts
+│   └── utils.ts
+├── next-env.d.ts
+├── next.config.ts
+├── package-lock.json
+├── package.json
+├── postcss.config.mjs
+├── public
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── logos
+│   │   ├── anthropic.png
+│   │   ├── chatgpt.png
+│   │   ├── claude.png
+│   │   ├── copilot.png
+│   │   ├── cursor.png
+│   │   ├── gemini.png
+│   │   ├── openai.png
+│   │   └── v0.png
+│   ├── next.svg
+│   ├── screenshots
+│   │   ├── dashboard.png
+│   │   ├── landing.png
+│   │   ├── mobile.png
+│   │   └── optimization.png
+│   ├── vercel.svg
+│   └── window.svg
+├── structure.txt
+├── tests
+│   └── audit.test.ts
+├── tsconfig.json
+├── tsconfig.tsbuildinfo
+└── types
+    ├── audit.ts
+    └── home.ts
+
+74 directories, 220 files
