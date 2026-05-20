@@ -6,7 +6,11 @@ export default function calcMonthlySpend(
 ) {
   return stack.reduce(
     (acc, tool) =>
-      acc + tool.pricePerSeat * tool.seats,
+      acc +
+      (
+        (tool.monthlyCost || tool.pricePerSeat || 0)
+      ) *
+      (tool.seats || 1),
     0
   );
 }

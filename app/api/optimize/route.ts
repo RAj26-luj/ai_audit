@@ -13,6 +13,8 @@ import PlanDowngradeRule from "./rules/PlanDowngradeRule";
 
 import type { Tool } from "./types/Tool";
 import type { ProductivityRisk } from "./types/Recommendation";
+import { saveAudit } from "@/lib/db/saveAudit";
+import { TOOLS_CONFIG } from "@/data/tools";
 
 //audit route
 export async function POST(req: Request) {
@@ -93,7 +95,31 @@ export async function POST(req: Request) {
       originalSpend, teamSize,
       engineeringTeamSize,
     });
+    const auditRecord =
+  await saveAudit({
+    email: body.email || "demo@stackaudit.dev",
 
+    inputJson: body,
+
+    resultJson: {
+      originalStack,
+      optimizedStack,
+      originalSpend,
+      optimizedSpend,
+      monthlySavings,
+      yearlySavings,
+      savingsPercentage,
+      optimizationScore,
+      productivityRisk,
+      recommendations,
+      benchmarks,
+    },
+
+    pricingSnapshot:
+      JSON.parse(
+        JSON.stringify(TOOLS_CONFIG)
+      ),
+  });
     //response
     return NextResponse.json({
       originalStack, optimizedStack,
@@ -101,7 +127,7 @@ export async function POST(req: Request) {
       monthlySavings, yearlySavings,
       savingsPercentage, optimizationScore,
       productivityRisk, recommendations,
-      benchmarks,
+      benchmarks,auditId:auditRecord?.id,
     });
 
   } catch (err) {
