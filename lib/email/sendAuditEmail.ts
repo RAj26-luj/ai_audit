@@ -1,8 +1,5 @@
 import { Resend } from "resend";
 
-const resend = new Resend(
-  process.env.RESEND_API_KEY
-);
 
 interface Props{
   to:string;
@@ -15,6 +12,9 @@ export async function sendAuditEmail({
 }:Props){
 
   try{
+    const resend = new Resend(
+  process.env.RESEND_API_KEY || ""
+);
 
     await resend.emails.send({
       from:"onboarding@resend.dev",
