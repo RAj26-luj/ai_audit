@@ -1,9 +1,16 @@
-//tool type
-export interface Tool {
-  id: string;
-  name: string;
-  plan: string;
+export type Tool = {
 
-  seats: number;
-  pricePerSeat: number;
-}
+  id:string;
+
+  name:string;
+
+  plan:string;
+
+  seats:number;
+
+  monthlyPrice:number;
+
+  monthlyCost:number;
+
+  pricePerSeat:number;
+};

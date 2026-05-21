@@ -1,29 +1,38 @@
+"use client";
+
 //lead form
 import { useState } from "react";
 
 //form logic
 export function useLeadForm(
-  onSubmit: any,
-  onClose: () => void
-) {
+  onSubmit:any,
+  onClose:()=>void
+){
 
-  const [email, setEmail] = useState("");
-  const [company, setCompany] = useState("");
-  const [role, setRole] = useState("");
+  const [email,setEmail] =
+    useState("");
 
-  const [teamSize, setTeamSize] = useState(10);
+  const [company,setCompany] =
+    useState("");
 
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [role,setRole] =
+    useState("");
+
+  const [loading,setLoading] =
+    useState(false);
+
+  const [success,setSuccess] =
+    useState(false);
 
   //submit form
-  const handleSubmit = async (
-    e: React.FormEvent
+  const handleSubmit = async(
+    e:React.FormEvent,
+    teamSize:number
   ) => {
 
     e.preventDefault();
 
-    try {
+    try{
 
       setLoading(true);
 
@@ -31,31 +40,40 @@ export function useLeadForm(
         email,
         company,
         role,
-        teamSize,
+        teamSize:
+          Number(teamSize) || 1,
       });
 
       setSuccess(true);
 
-      setTimeout(() => {
+      setTimeout(()=>{
         onClose();
-      }, 1800);
+      },1800);
 
-    } catch (err) {
+    }catch(err){
 
       console.error(err);
 
-    } finally {
+    }finally{
 
       setLoading(false);
     }
   };
 
   return {
-    email, setEmail,
-    company, setCompany,
-    role, setRole,
-    teamSize, setTeamSize,
-    loading, success,
+
+    email,
+    setEmail,
+
+    company,
+    setCompany,
+
+    role,
+    setRole,
+
+    loading,
+    success,
+
     handleSubmit,
   };
 }

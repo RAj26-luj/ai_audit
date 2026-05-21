@@ -53,8 +53,8 @@ export default class ToolOverlapRule
             `Cursor and GitHub Copilot overlap heavily for autocomplete and code generation workflows.`,
 
           savings:
-            copilot.pricePerSeat *
-            copilot.seats,
+           (copilot.pricePerSeat || 0) *
+(copilot.seats || 1),
 
           confidenceScore: 0.84,
           productivityRisk: "Medium",
@@ -63,7 +63,7 @@ export default class ToolOverlapRule
             type:
               RecommendationAction.CONSOLIDATE,
 
-            targetIds: [copilot.id],
+            targetIds: [copilot.id||""],
           },
         });
       }
@@ -86,8 +86,9 @@ export default class ToolOverlapRule
       const sorted =
         [...chatTools].sort(
           (a, b) =>
-            a.pricePerSeat * a.seats -
-            b.pricePerSeat * b.seats
+            (a.pricePerSeat || 0) *
+(a.seats || 1) -
+            (b.pricePerSeat || 0) * (b.seats || 1)
         );
 
       const cheapest = sorted[0];
@@ -103,8 +104,8 @@ export default class ToolOverlapRule
           `Multiple premium chatbot subscriptions were detected.`,
 
         savings:
-          cheapest.pricePerSeat *
-          cheapest.seats,
+          (cheapest.pricePerSeat || 0) *
+          (cheapest.seats || 1),
 
           confidenceScore: 0.8,
          productivityRisk: "Low",
@@ -113,7 +114,7 @@ export default class ToolOverlapRule
           type:
             RecommendationAction.CONSOLIDATE,
 
-          targetIds: [cheapest.id],
+          targetIds: [cheapest.id||""],
         },
       });
     }

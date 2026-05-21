@@ -30,14 +30,14 @@ export default class SeatUtilizationRule
           : input.teamSize;
 
       //extra seats
-      if (tool.seats > logicalSeats) {
+      if ((tool.seats || 0) > logicalSeats) {
 
         const excessSeats =
-          tool.seats - logicalSeats;
+          (tool.seats || 0) - logicalSeats;
 
         const savings =
           excessSeats *
-          tool.pricePerSeat;
+          (tool.pricePerSeat || 0);
 
         //add recommendation
         recs.push({

@@ -2,6 +2,8 @@ export const APP_NAME = "StackAudit";
 
 export const CREDEX_URL = "https://credex.rocks";
 
+
+
 export type ToolType = {
   id: string;
   name: string;
@@ -23,7 +25,7 @@ export const TOOLS_CONFIG: ToolType[] = [
     basePrice: {
       Hobby: 0,
       Pro: 20,
-      Business: 40,
+      Business: 80,
       Enterprise: 100,
     },
   },

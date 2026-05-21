@@ -26,7 +26,7 @@ export default function applyRecommendations(
 
       optimizedStack = optimizedStack.filter(
         (tool: Tool) =>
-          !action.targetIds?.includes(tool.id)
+          !action.targetIds?.includes(tool.id || "")
       );
     }
 
@@ -36,7 +36,7 @@ export default function applyRecommendations(
       optimizedStack = optimizedStack.map((tool: Tool) => {
 
         if (tool.name === action.tool) {
-          return { ...tool, seats: Math.max(1, tool.seats - (action.seatsToRemove || 0)) };
+          return { ...tool, seats: Math.max(1, (tool.seats || 0) - (action.seatsToRemove || 0)) };
         }
 
         return tool;

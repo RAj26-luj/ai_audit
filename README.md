@@ -20,6 +20,8 @@ StackAudit analyzes AI tool usage, pricing, seat allocation, and overlap between
 
 The system combines deterministic rule-based financial analysis with AI-generated summaries to produce clear and actionable optimization reports.
 
+Round 2 extends the platform with persistent audit storage and automated re-audit detection when AI pricing changes.
+
 ---
 
 ## Features
@@ -38,6 +40,13 @@ The system combines deterministic rule-based financial analysis with AI-generate
 - Shareable audit links
 - Rule-based recommendation engine
 - Audit engine testing with Jest
+- Persistent audit storage
+- Automated re-audit detection
+- Pricing snapshot tracking
+- Compare-page diff view
+- AI pricing change notifications
+- Scheduled re-audit checks
+- Public pricing updates page
 
 ---
 
@@ -55,6 +64,15 @@ The system combines deterministic rule-based financial analysis with AI-generate
 ### Mobile View
 ![Mobile](public/screenshots/mobile.png)
 
+### Re-Audit Compare View
+![Compare](public/screenshots/compare-page.png)
+
+### Pricing Change Email
+![Email](public/screenshots/pricing-email.png)
+
+### Pricing Updates Feed
+![Changes](public/screenshots/pricing-updates.png)
+
 ---
 
 ## Tech Stack
@@ -64,6 +82,7 @@ The system combines deterministic rule-based financial analysis with AI-generate
 - Tailwind CSS
 - Supabase
 - OpenRouter API
+- Brevo SMTP API
 - Jest
 - html2canvas
 - jsPDF
@@ -72,7 +91,7 @@ The system combines deterministic rule-based financial analysis with AI-generate
 
 ## Architecture Overview
 
-User Input → Audit Engine → Recommendation Generator → AI Summary → Results Dashboard / PDF Export
+User Input → Audit Engine → Persistent Audit Storage → Pricing Snapshot Tracking → Re-Audit Detection → Email Notification → Compare View / Results Dashboard
 
 ---
 
@@ -87,8 +106,74 @@ User Input → Audit Engine → Recommendation Generator → AI Summary → Resu
 
 ---
 
+## Key Round 2 Routes
+
+### Re-audit detection
+
+```bash
+POST /api/detect-changes
+```
+
+Detects pricing changes and regenerates stale audits.
+
+---
+
+### Pricing simulation
+
+```bash
+POST /api/simulate-price-change
+```
+
+Simulates AI pricing updates for testing the re-audit workflow.
+
+---
+
+### Compare page
+
+```bash
+/audit/[id]/compare
+```
+
+Shows original vs updated recommendations and savings deltas.
+
+---
+
+### Pricing updates page
+
+```bash
+/changes
+```
+
+Displays simulated AI pricing updates.
+
+---
+
 ## Local Setup
 
 ```bash
 npm install
 npm run dev
+```
+
+---
+
+## Production Deployment
+
+Deployed on Vercel with:
+- Supabase persistence
+- Brevo email delivery
+- scheduled re-audit checks
+- production-ready compare flows
+
+---
+
+## Reviewer Quick Test
+
+### Create an audit
+
+Open:
+
+```bash
+https://ai-audit-kappa.vercel.app
+```
+
