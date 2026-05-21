@@ -2,33 +2,18 @@ interface Props{
 
   to:string;
 
-  audits:{
-    auditId:string;
-    email:string;
-  }[];
+  auditId:string;
 }
 
 export async function sendAuditEmail({
 
   to,
 
-  audits,
+  auditId,
 
 }:Props){
 
   try{
-
-    const auditLinks =
-      audits.map(
-        (audit)=>
-`
-<li>
-  <a href="https://ai-audit-kappa.vercel.app/audit/${audit.auditId}/compare">
-    View audit ${audit.auditId}
-  </a>
-</li>
-`
-      ).join("");
 
     const response =
       await fetch(
@@ -91,7 +76,7 @@ font-size:16px;
 color:#374151;
 line-height:1.6;
 ">
-We detected pricing changes affecting your saved AI stack audits.
+We detected pricing changes affecting your saved AI stack audit.
 </p>
 
 <div style="
@@ -102,17 +87,8 @@ background:#f9fafb;
 border-radius:10px;
 ">
 
-<ul style="
-padding-left:20px;
-line-height:2;
-">
-${auditLinks}
-</ul>
-
-</div>
-
 <a
-href="https://ai-audit-kappa.vercel.app"
+href="https://ai-audit-kappa.vercel.app/audit/${auditId}/compare"
 style="
 display:inline-block;
 padding:12px 20px;
@@ -123,8 +99,10 @@ border-radius:8px;
 font-weight:600;
 "
 >
-Open StackAudit
+View Updated Audit
 </a>
+
+</div>
 
 <p style="
 margin-top:24px;
