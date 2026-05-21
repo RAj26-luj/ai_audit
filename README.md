@@ -174,3 +174,6 @@ Deployed on Vercel with:
 Open:
 
 ```bash
+https://ai-audit-kappa.vercel.app
+```
+
