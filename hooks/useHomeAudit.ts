@@ -9,6 +9,8 @@ import type {
   StepType,
   FormDataType,
 } from "@/types/home";
+import { supabase }
+from "@/lib/supabase";
 
 //home audit hook
 export function useHomeAudit() {
@@ -216,36 +218,47 @@ export function useHomeAudit() {
 
     try{
 
-      const res =
-        await fetch(
-          "/api/lead",
-          {
-            method:"POST",
+   const res =
+  await fetch(
+    "/api/lead",
+    {
+      method:"POST",
 
-            headers:{
-              "Content-Type":
-                "application/json",
-            },
+      headers:{
+        "Content-Type":
+          "application/json",
+      },
 
-            body:JSON.stringify({
+      body:JSON.stringify({
 
-              email:
-                leadData.email,
+        email:
+          leadData.email,
 
-              company:
-                leadData.company,
+        company:
+          leadData.company,
 
-              role:
-                leadData.role,
+        role:
+          leadData.role,
 
-              teamSize:
-                leadData.teamSize,
+        teamSize:
+          leadData.teamSize,
 
-              auditId:
-                auditResult?.id,
-            }),
-          }
-        );
+        auditId:
+          auditResult?.id,
+      }),
+    }
+  );
+
+await supabase
+  .from("audits")
+  .update({
+    email:
+      leadData.email,
+  })
+  .eq(
+    "id",
+    auditResult?.id
+  );
 
       if(!res.ok){
         throw new Error(

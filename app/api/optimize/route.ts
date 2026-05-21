@@ -190,8 +190,7 @@ const stack: Tool[] =
       await saveAudit({
 
         email:
-          body.email ||
-          "demo@stackaudit.dev",
+  body.email || null,
 
         inputJson:body,
 
