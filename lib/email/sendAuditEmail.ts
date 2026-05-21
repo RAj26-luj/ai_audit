@@ -20,32 +20,34 @@ export async function sendAuditEmail({
 
     console.log("RESEND_CREATED");
 
-    const response =
-      await resend.emails.send({
+const response =
+  await resend.emails.send({
 
-        from:"onboarding@resend.dev",
+    from:"StackAudit <onboarding@resend.dev>",
 
-        to,
+    to,
 
-        subject:
-          "Your AI stack recommendations changed",
+    replyTo:"rajkumarnathsharma2005@gmail.com",
 
-        html:`
-          <div style="font-family:sans-serif">
-            <h2>
-              Your AI stack recommendations changed
-            </h2>
+    subject:
+      "Your AI stack recommendations changed",
 
-            <p>
-              We detected pricing changes in your audit.
-            </p>
+    html:`
+      <div style="font-family:sans-serif">
+        <h2>
+          Your AI stack recommendations changed
+        </h2>
 
-            <a href="https://ai-audit-kappa.vercel.app/audit/${auditId}/compare">
-              View comparison
-            </a>
-          </div>
-        `,
-      });
+        <p>
+          We detected pricing changes in your audit.
+        </p>
+
+        <a href="https://ai-audit-kappa.vercel.app/audit/${auditId}/compare">
+          View comparison
+        </a>
+      </div>
+    `,
+  });
 
     console.log("EMAIL_RESPONSE",response);
 
