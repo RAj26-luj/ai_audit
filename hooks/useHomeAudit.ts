@@ -1,21 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
-import { TOOLS_CONFIG } from "@/data/tools";
+import { useRouter }
+from "next/navigation";
+
+import { TOOLS_CONFIG }
+from "@/data/tools";
+
+import { supabase }
+from "@/lib/supabase";
 
 import type {
   StepType,
   FormDataType,
 } from "@/types/home";
-import { supabase }
-from "@/lib/supabase";
 
 //home audit hook
-export function useHomeAudit() {
+export function useHomeAudit(){
 
-  const router = useRouter();
+  const router =
+    useRouter();
 
   //step
   const [step,setStep] =
@@ -33,8 +38,10 @@ export function useHomeAudit() {
     });
 
   //result
-  const [auditResult,setAuditResult] =
-    useState<any>(null);
+  const [
+    auditResult,
+    setAuditResult,
+  ] = useState<any>(null);
 
   //lead modal
   const [
@@ -43,7 +50,7 @@ export function useHomeAudit() {
   ] = useState(false);
 
   //start audit
-  const startAudit = async () => {
+  const startAudit = async()=>{
 
     try{
 
@@ -64,7 +71,7 @@ export function useHomeAudit() {
                 toolId
               ];
 
-            return {
+            return{
 
               id:toolId,
 
@@ -140,6 +147,7 @@ export function useHomeAudit() {
               },
 
               body:JSON.stringify({
+
                 yearlySpend:
                   result.yearlySavings ||
                   0,
@@ -187,7 +195,7 @@ export function useHomeAudit() {
         finalResult
       );
 
-      //go results
+      //show modal
       setTimeout(()=>{
 
         setStep("results");
@@ -207,7 +215,7 @@ export function useHomeAudit() {
   };
 
   //submit lead
-  const submitLead = async (
+  const submitLead = async(
     leadData:{
       email:string;
       company:string;
@@ -218,58 +226,64 @@ export function useHomeAudit() {
 
     try{
 
-   const res =
-  await fetch(
-    "/api/lead",
-    {
-      method:"POST",
+      //save lead
+      const res =
+        await fetch(
+          "/api/lead",
+          {
+            method:"POST",
 
-      headers:{
-        "Content-Type":
-          "application/json",
-      },
+            headers:{
+              "Content-Type":
+                "application/json",
+            },
 
-      body:JSON.stringify({
+            body:JSON.stringify({
 
-        email:
-          leadData.email,
+              email:
+                leadData.email,
 
-        company:
-          leadData.company,
+              company:
+                leadData.company,
 
-        role:
-          leadData.role,
+              role:
+                leadData.role,
 
-        teamSize:
-          leadData.teamSize,
+              teamSize:
+                leadData.teamSize,
 
-        auditId:
-          auditResult?.id,
-      }),
-    }
-  );
-
-await supabase
-  .from("audits")
-  .update({
-    email:
-      leadData.email,
-  })
-  .eq(
-    "id",
-    auditResult?.id
-  );
+              auditId:
+                auditResult?.id,
+            }),
+          }
+        );
 
       if(!res.ok){
+
         throw new Error(
           "Lead save failed"
         );
       }
 
+      //update audit email
+      await supabase
+        .from("audits")
+        .update({
+
+          email:
+            leadData.email,
+        })
+        .eq(
+          "id",
+          auditResult?.id
+        );
+
+      //close modal
       setShowLeadModal(
         false
       );
 
+      //redirect
       router.push(
         `/audit/${auditResult?.id}`
       );
@@ -284,20 +298,17 @@ await supabase
     }
   };
 
-  return {
+  return{
 
     step,
-
     setStep,
 
     formData,
-
     setFormData,
 
     auditResult,
 
     showLeadModal,
-
     setShowLeadModal,
 
     startAudit,
