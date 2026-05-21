@@ -1,6 +1,5 @@
 import { Resend } from "resend";
 
-
 interface Props{
   to:string;
   auditId:string;
@@ -11,45 +10,48 @@ export async function sendAuditEmail({
   auditId,
 }:Props){
 
+  console.log("EMAIL_FUNCTION_STARTED");
+
   try{
+
     const resend = new Resend(
-  process.env.RESEND_API_KEY || ""
-);
+      process.env.RESEND_API_KEY
+    );
 
-    await resend.emails.send({
-      from:"onboarding@resend.dev",
+    console.log("RESEND_CREATED");
 
-      to,
+    const response =
+      await resend.emails.send({
 
-      subject:
-        "Your AI stack recommendations changed",
+        from:"onboarding@resend.dev",
 
-      html:`
-        <div style="font-family:sans-serif">
+        to,
 
-          <h2>
-            Your AI stack recommendations changed
-          </h2>
+        subject:
+          "Your AI stack recommendations changed",
 
-          <p>
-            We detected pricing or optimization
-            changes in your AI stack audit.
-          </p>
+        html:`
+          <div style="font-family:sans-serif">
+            <h2>
+              Your AI stack recommendations changed
+            </h2>
 
-          <a
-            href="https://ai-audit-kappa.vercel.app/audit/${auditId}/compare"
-          >
-            View comparison
-          </a>
+            <p>
+              We detected pricing changes in your audit.
+            </p>
 
-        </div>
-      `,
-    });
-    console.log("EMAIL_SENT",to);
+            <a href="https://ai-audit-kappa.vercel.app/audit/${auditId}/compare">
+              View comparison
+            </a>
+          </div>
+        `,
+      });
+
+    console.log("EMAIL_RESPONSE",response);
 
     return true;
 
-  } catch(err){
+  }catch(err){
 
     console.error(
       "EMAIL_ERROR",
