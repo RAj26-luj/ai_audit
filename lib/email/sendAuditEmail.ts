@@ -37,7 +37,7 @@ export async function sendAuditEmail({
           </p>
 
           <a
-            href="http://localhost:3000/audit/${auditId}/compare"
+            href="https://ai-audit-kappa.vercel.app/audit/${auditId}/compare"
           >
             View comparison
           </a>
@@ -45,6 +45,7 @@ export async function sendAuditEmail({
         </div>
       `,
     });
+    console.log("EMAIL_SENT",to);
 
     return true;
 
