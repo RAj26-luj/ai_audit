@@ -78,6 +78,21 @@ line-height:1.6;
 ">
 We detected pricing changes affecting your saved AI stack audit.
 </p>
+<ul style="
+margin-top:16px;
+color:#374151;
+line-height:1.8;
+">
+  <li>
+    Cursor Business:
+    $40 → $45
+  </li>
+
+  <li>
+    GitHub Copilot Enterprise:
+    $39 → $49
+  </li>
+</ul>
 
 <div style="
 margin-top:20px;
