@@ -53,11 +53,40 @@ export async function POST(
       await req.json();
 
     //support both stack and tools
-    const stack: Tool[] =
-      body.stack ||
-      body.tools ||
-      [];
+    const rawStack =
+  body.stack ||
+  body.tools ||
+  [];
 
+const stack: Tool[] =
+  rawStack.map((tool:any)=>({
+
+    id:
+      tool.id ||
+      tool.name,
+
+    name:
+      tool.name,
+
+    plan:
+      tool.plan,
+
+    seats:
+      tool.seats || 1,
+
+    monthlyPrice:
+      tool.monthlyPrice || 0,
+
+    monthlyCost:
+      tool.monthlyCost ||
+      tool.monthlyPrice ||
+      0,
+
+    pricePerSeat:
+      tool.pricePerSeat ||
+      tool.monthlyPrice ||
+      0,
+  }));
     const teamSize =
       body.teamSize || 1;
 

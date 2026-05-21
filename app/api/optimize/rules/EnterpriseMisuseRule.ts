@@ -31,7 +31,7 @@ export default class EnterpriseMisuseRule
       }
 
       //small teams
-      if (tool.seats <= 20) {
+      if ((tool.seats || 0) <= 20) {
 
         let downgradePlan = "Team";
         let recommendedPrice = 30;
@@ -57,9 +57,9 @@ export default class EnterpriseMisuseRule
         //calc savings
         const savings =
           (
-            tool.pricePerSeat -
-            recommendedPrice
-          ) * tool.seats;
+  (tool.pricePerSeat || 0) -
+  recommendedPrice
+) * (tool.seats || 1);
 
         if (savings <= 0) {
           continue;

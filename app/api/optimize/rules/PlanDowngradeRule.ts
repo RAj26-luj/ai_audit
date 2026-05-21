@@ -26,7 +26,7 @@ export default class PlanDowngradeRule
       if (
         tool.name === "Cursor" &&
         tool.plan === "Business" &&
-        tool.seats <= 10
+        (tool.seats || 0) <= 10
       ) {
 
         recs.push({
@@ -39,8 +39,8 @@ export default class PlanDowngradeRule
             `Cursor Pro provides similar productivity for smaller engineering teams.`,
 
           savings:
-            (tool.pricePerSeat - 20) *
-            tool.seats,
+            ((tool.pricePerSeat || 0) - 20) *
+            (tool.seats || 0),
 
           confidenceScore: 0.9,
           productivityRisk: "Low",
@@ -70,8 +70,8 @@ export default class PlanDowngradeRule
             `Claude Pro is sufficient for most startup workflows.`,
 
           savings:
-            (tool.pricePerSeat - 20) *
-            tool.seats,
+            ((tool.pricePerSeat || 0) - 20) *
+            (tool.seats || 0),
 
           confidenceScore: 0.83,
           productivityRisk: "Medium",
