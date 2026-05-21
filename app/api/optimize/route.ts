@@ -14,7 +14,7 @@ import PlanDowngradeRule from "./rules/PlanDowngradeRule";
 import type { Tool } from "./types/Tool";
 import type { ProductivityRisk } from "./types/Recommendation";
 import { saveAudit } from "@/lib/db/saveAudit";
-import { TOOLS_CONFIG } from "@/data/tools";
+import { TOOLS_CONFIG} from "@/data/tools";
 
 //audit route
 export async function POST(req: Request) {
@@ -119,6 +119,7 @@ export async function POST(req: Request) {
       JSON.parse(
         JSON.stringify(TOOLS_CONFIG)
       ),
+     pricingVersion:1,
   });
     //response
     return NextResponse.json({

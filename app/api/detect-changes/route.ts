@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 
 import { supabase } from "@/lib/supabase";
-import { TOOLS_CONFIG } from "@/data/tools";
-import { sendAuditEmail }
-from "@/lib/email/sendAuditEmail";
+import { sendAuditEmail }from "@/lib/email/sendAuditEmail";
+import {getSimulatedVersion}from "../simulate-price-change/route";
 
 export async function POST() {
 
@@ -22,17 +21,10 @@ export async function POST() {
 
     for(const audit of audits || []){
 
-      const oldPricing =
-        JSON.stringify(
-          audit.pricing_snapshot
-        );
-
-      const currentPricing =
-        JSON.stringify(
-          TOOLS_CONFIG
-        );
-
-      if(oldPricing !== currentPricing){
+if(
+  audit.pricing_version !==
+  getSimulatedVersion()
+){
         if(audit.email){
 
         await sendAuditEmail({

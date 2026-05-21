@@ -2,6 +2,8 @@ export const APP_NAME = "StackAudit";
 
 export const CREDEX_URL = "https://credex.rocks";
 
+
+
 export type ToolType = {
   id: string;
   name: string;

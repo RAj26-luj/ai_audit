@@ -5,6 +5,7 @@ interface SaveAuditProps {
   inputJson:any;
   resultJson:any;
   pricingSnapshot:any;
+  pricingVersion:number;
 }
 
 export async function saveAudit({
@@ -23,6 +24,7 @@ export async function saveAudit({
           input_json:inputJson,
           result_json:resultJson,
           pricing_snapshot:pricingSnapshot,
+          
         },
       ])
       .select()
