@@ -73,12 +73,17 @@ export default function LeadCaptureModal({
 
               teamSize={formData.teamSize}
 
-              setTeamSize={(value: number) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  teamSize: value,
-                }))
-              }
+              setTeamSize={(
+  value:number | ""
+)=>
+  setFormData((prev)=>({
+    ...prev,
+    teamSize:
+      value === ""
+        ? 1
+        : value,
+  }))
+}
 
               loading={loading}
 
