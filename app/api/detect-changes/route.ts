@@ -5,9 +5,8 @@ import { supabase } from "@/lib/supabase";
 import { sendAuditEmail }
 from "@/lib/email/sendAuditEmail";
 
-import {
-  getSimulatedVersion
-} from "../simulate-price-change/route";
+import { getSimulatedVersion }
+from "../simulate-price-change/route";
 
 import AIAuditEngine
 from "../optimize/engine/AIAuditEngine";
@@ -24,58 +23,62 @@ from "../optimize/rules/ToolOverlapRule";
 import PlanDowngradeRule
 from "../optimize/rules/PlanDowngradeRule";
 
-import applyRecommendations
-from "../optimize/utils/applyRecommendations";
-
 import calcMonthlySpend
 from "../optimize/helpers/calcMonthlySpend";
 
-export async function POST() {
+import calculateOptimizationScore
+from "../optimize/engine/calculateOptimizationScore";
 
-  try {
+import calculateRisk
+from "../optimize/utils/calculateRisk";
 
-    const { data: audits, error } =
+import calculateBenchmarks
+from "../optimize/utils/calculateBenchmarks";
+
+import applyRecommendations
+from "../optimize/utils/applyRecommendations";
+
+export async function POST(){
+
+  try{
+
+    const { data:audits,error } =
       await supabase
         .from("audits")
         .select("*");
 
-    if (error) {
+    if(error){
       throw error;
     }
 
     const changedAudits = [];
 
-    for (const audit of audits || []) {
+    for(const audit of audits || []){
 
-      if (
+      if(
         audit.pricing_version !==
         getSimulatedVersion()
-      ) {
+      ){
 
-        //original stack
         const stack =
           audit.input_json?.tools ||
           audit.input_json?.stack ||
           [];
 
         const teamSize =
-          audit.input_json?.teamSize ||
-          1;
+          audit.input_json?.teamSize || 1;
 
         const engineeringTeamSize =
-          audit.input_json
-            ?.engineeringTeamSize ||
+          audit.input_json?.engineeringTeamSize ||
           Math.max(
             1,
             Math.floor(teamSize * 0.4)
           );
 
         const primaryUseCase =
-          audit.input_json
-            ?.primaryUseCase ||
+          audit.input_json?.primaryUseCase ||
           "General";
 
-        //rerun audit engine
         const engine =
           new AIAuditEngine([
             new SeatUtilizationRule(),
@@ -92,14 +95,12 @@ export async function POST() {
             primaryUseCase,
           });
 
-        //optimized stack
         const optimizedStack =
           applyRecommendations(
             stack,
             recommendations
           );
 
-        //spend calculations
         const originalSpend =
           calcMonthlySpend(stack);
 
@@ -108,10 +109,46 @@ export async function POST() {
             optimizedStack
           );
 
+        const monthlySavings =
+          originalSpend -
+          optimizedSpend;
+
+        const yearlySavings =
+          monthlySavings * 12;
+
+        const savingsPercentage =
+          originalSpend > 0
+            ? Math.round(
+                (
+                  monthlySavings /
+                  originalSpend
+                ) * 100
+              )
+            : 0;
+
+        const optimizationScore =
+          calculateOptimizationScore({
+            originalSpend,
+            savings:
+              monthlySavings,
+            recommendations,
+          });
+
+        const productivityRisk =
+          calculateRisk(
+            recommendations
+          );
+
+        const benchmarks =
+          calculateBenchmarks({
+            originalSpend,
+            teamSize,
+            engineeringTeamSize,
+          });
+
         const updatedResult = {
 
-          originalStack:
-            stack,
+          originalStack:stack,
 
           optimizedStack,
 
@@ -119,20 +156,21 @@ export async function POST() {
 
           optimizedSpend,
 
-          monthlySavings:
-            originalSpend -
-            optimizedSpend,
+          monthlySavings,
 
-          yearlySavings:
-            (
-              originalSpend -
-              optimizedSpend
-            ) * 12,
+          yearlySavings,
+
+          savingsPercentage,
+
+          optimizationScore,
+
+          productivityRisk,
 
           recommendations,
+
+          benchmarks,
         };
 
-        //save updated result
         await supabase
           .from("audits")
           .update({
@@ -142,34 +180,39 @@ export async function POST() {
 
             pricing_version:
               getSimulatedVersion(),
-
           })
-          .eq("id", audit.id);
+          .eq("id",audit.id);
 
-        //send email
-        if (audit.email) {
+        if(audit.email){
 
           await sendAuditEmail({
-            to: audit.email,
-            auditId: audit.id,
+
+            to:audit.email,
+
+            auditId:audit.id,
           });
         }
 
         changedAudits.push({
-          auditId: audit.id,
-          email: audit.email,
+
+          auditId:audit.id,
+
+          email:audit.email,
         });
       }
     }
 
     return NextResponse.json({
-      success: true,
+
+      success:true,
+
       changedAudits,
+
       total:
         changedAudits.length,
     });
 
-  } catch (err) {
+  }catch(err){
 
     console.error(err);
 
@@ -179,7 +222,7 @@ export async function POST() {
           "detect changes failed",
       },
       {
-        status: 500,
+        status:500,
       }
     );
   }
