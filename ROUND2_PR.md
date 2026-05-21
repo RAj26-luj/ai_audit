@@ -2,153 +2,178 @@
 
 ## What this PR does
 
-Focused on shipping a reliable end-to-end re-audit workflow by incrementally extending the existing Round 1 architecture instead of introducing new infrastructure.
-
-This PR adds a persistent AI audit re-check system to StackAudit.
+This PR extends the existing StackAudit codebase with a persistent re-audit workflow that keeps AI spend recommendations up to date when tooling prices change.
 
 The system now:
 
 - stores completed audits in Supabase
 - stores pricing snapshots used during audit generation
 - detects pricing changes against stored snapshots
-- supports re-audit comparison pages
-- triggers email notifications when recommendations change
+- supports automated re-audit detection
+- sends notification emails to affected users
+- supports compare/re-audit flows
+- includes scheduled cron-based monitoring
 
-The implementation focuses on reliability and simplicity over infrastructure complexity.
-
----
-
-## Why
-
-AI pricing changes frequently.
-
-Teams making optimization decisions based on stale pricing data can lose savings opportunities or receive outdated recommendations.
-
-This system allows StackAudit to:
-
-- persist audit history
-- compare old vs new recommendations
-- notify users when pricing changes affect optimization opportunities
+The implementation focuses on shipping a reliable end-to-end workflow within the assignment constraints.
 
 ---
 
-## How it works
+# Why
 
-### 1. Persistent audit storage
+AI tooling prices change frequently.
+
+A one-time audit quickly becomes stale, especially for startups actively optimizing AI spend.
+
+This system keeps audits useful over time by:
+
+- persisting audit history
+- detecting outdated recommendations
+- notifying users automatically
+- allowing re-audit comparison flows
+
+---
+
+# Architecture
+
+## Persistent audit storage
 
 Completed audits are stored in Supabase with:
 
-- audit input
-- audit result
+- audit input JSON
+- audit result JSON
 - pricing snapshot
-- email
-- timestamp
+- pricing version
+- user email
+- timestamps
 
 ---
 
-### 2. Pricing snapshot comparison
+## Pricing-change detection
 
-A new endpoint:
+A detection endpoint:
 
 POST /api/detect-changes
 
-checks all stored audits against current pricing configuration.
+checks stored pricing snapshots against the current pricing configuration.
 
-Current implementation uses simple JSON snapshot comparison.
-
----
-
-### 3. Email notifications
-
-When pricing changes are detected:
-
-- affected audits are identified
-- notification emails are triggered using Resend
-- users receive a compare link
+Current implementation uses pricing version + snapshot comparison to determine whether an audit has become stale.
 
 ---
 
-### 4. Compare page
+## Email notification flow
 
-New route:
+When pricing changes affect saved audits:
+
+- affected audits are detected
+- users receive notification emails using Brevo SMTP API
+- emails include direct compare/re-audit links
+
+To avoid spam, notifications are grouped per user instead of per audit.
+
+---
+
+## Compare page
+
+New compare route:
 
 /audit/[id]/compare
 
-Displays stored recommendations and savings information.
+allows users to revisit previous audits and compare updated recommendations.
+
+The compare workflow highlights:
+
+- updated savings
+- changed recommendations
+- new optimization opportunities
 
 ---
 
-## What I intentionally cut
+# Scheduling
 
-To prioritize shipping a reliable end-to-end flow within time constraints, I intentionally skipped:
+A Vercel cron job now automatically triggers:
 
-- cron infrastructure
-- unsubscribe flow
-- advanced diff engine
-- semantic recommendation comparison
-- queue system
-- retry infrastructure
-- background jobs
-- pricing versioning system
-- historical pricing timeline
-- advanced dashboard UI
+/api/detect-changes
 
-The system is designed to be cron-compatible later.
+every 6 hours.
+
+This keeps saved audits continuously monitored without manual intervention.
 
 ---
 
-## How to test manually
+# Engineering decisions
 
-## Reviewer Quick Test Flow
+I intentionally optimized for:
 
-### 1. Create an audit
+- reliability
+- shipping speed
+- minimal infrastructure complexity
+- extending the existing Round 1 architecture cleanly
 
-Open the app normally and generate an audit.
-
----
-
-### 2. Simulate pricing changes
-
-Open:
-
-data/tools.ts
-
-Change a pricing value.
-
-Example:
-
-ts monthlyPrice:20 
-
-to:
-
-ts monthlyPrice:50 
+instead of introducing heavy background processing systems.
 
 ---
 
-### 3. Redeploy or restart server
+# What I intentionally cut
 
-The updated pricing snapshot will now differ from stored audit snapshots.
+To prioritize a complete working workflow within the time constraint, I intentionally skipped:
+
+- real external pricing APIs
+- advanced semantic diff engine
+- retry queue infrastructure
+- unsubscribe preferences UI
+- historical pricing analytics
+- admin dashboard metrics
+- advanced visual comparison UI
+
+The current implementation is designed so these can be added incrementally later.
 
 ---
 
-### 4. Trigger re-audit detection
+# Major debugging challenges
+
+## Pricing normalization bug
+
+The optimize endpoint originally expected `stack`, while frontend/test payloads used `tools`.
+
+This caused audits to save successfully but produce zero savings calculations.
+
+Fixed by:
+
+- supporting both `stack` and `tools`
+- normalizing pricing fields
+- standardizing `monthlyPrice`, `monthlyCost`, and `pricePerSeat`
+
+---
+
+## Email provider migration
+
+Initial implementation used Resend but encountered validation and rate-limit issues during testing.
+
+Migrated to Brevo SMTP API for more reliable delivery during the assignment window.
+
+---
+
+## TypeScript migration cleanup
+
+Several rule engines assumed fields were always defined.
+
+Refactored audit logic to safely handle optional pricing + seat fields and standardized Tool typing across rules.
+
+---
+
+# How to test manually
+
+## 1. Generate an audit
+
+Use the app normally and submit an audit.
+
+Confirm the audit row appears in Supabase.
+
+---
+
+## 2. Trigger pricing change
 
 Call:
 
-bash curl -X POST http://localhost:3000/api/detect-changes 
-
----
-
-### 5. Verify compare page
-
-Open:
-
-/audit/[id]/compare
-
-The compare page will reflect updated recommendations and pricing differences.
-
----
-
-### 6. Verify email trigger flow
-
-If recommendations changed, the Resend email flow will trigger with the updated compare link.
+```bash
+curl -X POST https://ai-audit-kappa.vercel.app/api/simulate-price-change
