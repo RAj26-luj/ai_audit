@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/detect-changes",
+      "schedule": "0 */6 * * *"
+    }
+  ]
+}
