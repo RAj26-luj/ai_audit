@@ -4,28 +4,29 @@
 
 This PR adds a persistent re-audit workflow to StackAudit.
 
-Audits are now stored in Supabase with their pricing snapshot and can be automatically re-evaluated when AI tool pricing changes. Users receive email alerts and can compare their original audit against the updated recommendations through a diff view.
+Completed audits are now stored with pricing snapshots and can automatically be re-evaluated when AI tool pricing changes. Users receive email notifications and can compare their original audit against updated recommendations through a compare view.
 
-The system supports:
+The implementation adds:
 - persistent audit storage
-- pricing change detection
-- automated re-audit generation
+- pricing snapshot persistence
+- automated re-audit detection
 - email notifications
-- audit comparison UI
+- compare-page generation
+- pricing update tracking
 
 ---
 
 ## Why
 
-AI pricing changes frequently and static audits become outdated quickly.
+AI pricing changes frequently and static audits lose value quickly once provider pricing changes.
 
-A one-time audit is useful initially, but loses value once providers change pricing or plans. This PR keeps audits live by detecting pricing changes and regenerating recommendations automatically.
+The goal of this PR was to make audits persistent and “live” instead of one-time reports. I assumed users would care more about being notified when their stack becomes inefficient again than only seeing a snapshot once.
 
-I optimized for:
+I prioritized:
 - end-to-end functionality
 - reviewer-verifiable flows
-- extending the existing Round 1 architecture cleanly
-- minimum additional infrastructure
+- production-safe implementation
+- minimal additional infrastructure
 
 ---
 
@@ -33,7 +34,7 @@ I optimized for:
 
 ### Audit persistence
 
-Every completed audit is now stored in Supabase with:
+Every completed audit now stores:
 - audit input JSON
 - generated recommendations
 - pricing snapshot
@@ -47,20 +48,111 @@ Files:
 
 ---
 
-### Pricing change simulation
+### Pricing simulation
 
-A manual endpoint was added to simulate AI pricing updates:
+Implemented:
 
 ```bash
 POST /api/simulate-price-change
+```
 
-## Reviewer quick verification
+This mutates pricing inside `TOOLS_CONFIG` to simulate real-world pricing updates.
 
-### 1. Create a real audit
+File:
+- `app/api/simulate-price-change/route.ts`
+
+---
+
+### Re-audit detection
+
+Implemented:
+
+```bash
+POST /api/detect-changes
+```
+
+The endpoint:
+- loads stored audits
+- compares stored pricing snapshots against current pricing config
+- regenerates recommendations
+- stores updated audit results
+- sends email notifications
+
+File:
+- `app/api/detect-changes/route.ts`
+
+---
+
+### Compare flow
+
+Implemented:
+
+```bash
+/audit/[id]/compare
+```
+
+This page shows:
+- original recommendations
+- updated recommendations
+- savings deltas
+- pricing impact changes
+
+File:
+- `app/audit/[id]/compare/page.tsx`
+
+---
+
+### Notification workflow
+
+Users receive pricing change emails containing:
+- pricing change summary
+- compare-page link
+- updated audit notification
+
+Provider:
+- Brevo SMTP API
+
+File:
+- `lib/email/sendAuditEmail.ts`
+
+---
+
+### Public pricing updates page
+
+Implemented:
+
+```bash
+/changes
+```
+
+This acts as a lightweight public pricing update feed for reviewer visibility and debugging.
+
+File:
+- `app/changes/page.tsx`
+
+---
+
+## What I cut
+
+- No unsubscribe workflow for notification emails
+- No batched/queued background re-audit processing
+- No admin analytics dashboard
+- No semantic recommendation diff engine
+- No retry queue infrastructure for failed notifications
+
+I prioritized shipping a complete and reliable end-to-end workflow over adding more infrastructure complexity.
+
+---
+
+## How to test it manually
+
+### 1. Create an audit
 
 Open:
 
+```bash
 https://ai-audit-kappa.vercel.app
+```
 
 Create an audit and save it with your own email.
 
@@ -70,7 +162,7 @@ Expected:
 
 ---
 
-### 2. Trigger pricing change
+### 2. Trigger pricing changes
 
 Run:
 
@@ -81,6 +173,15 @@ curl -X POST https://ai-audit-kappa.vercel.app/api/simulate-price-change
 Expected:
 - pricing version increments
 - pricing values mutate
+
+Example response:
+
+```json
+{
+  "success": true,
+  "pricingVersion": 2
+}
+```
 
 ---
 
@@ -118,7 +219,9 @@ Example:
 
 Open:
 
+```bash
 https://ai-audit-kappa.vercel.app/audit/[auditId]/compare
+```
 
 Expected:
 - original recommendations shown
@@ -148,8 +251,43 @@ Expected:
 
 Open:
 
+```bash
 https://ai-audit-kappa.vercel.app/changes
+```
 
 Expected:
 - pricing change feed visible
 - simulated updates displayed
+
+---
+
+## What's tested
+
+Tested manually:
+- audit persistence
+- lead capture flow
+- pricing snapshot storage
+- pricing mutation simulation
+- snapshot diff detection
+- re-audit generation
+- compare-page rendering
+- email delivery
+- production deployment behavior
+- Supabase persistence
+- cron compatibility
+
+I did not add automated integration tests due to time constraints.
+
+If I extended testing further, I would first add:
+- snapshot diff detection tests
+- compare-page rendering tests
+- persistence consistency tests
+- email workflow integration tests
+
+---
+
+## Open questions / risks
+
+- Re-audit processing is synchronous and would need queue infrastructure at larger scale
+- Pricing simulation currently mutates local config instead of consuming external provider APIs
+- Notification delivery currently does not support retries or batching

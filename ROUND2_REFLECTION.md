@@ -1,158 +1,65 @@
-# Engineering Tradeoffs
+# ROUND 2 REFLECTION
 
-## Extending the existing architecture instead of rewriting
+## 1. What was the most uncomfortable trade-off you made because of the time pressure?
 
-I intentionally extended the existing Round 1 architecture instead of rebuilding the audit engine or introducing separate infrastructure layers.
+The biggest trade-off was choosing deterministic pricing snapshot comparison instead of building a more intelligent semantic recommendation diff engine.
 
-This reduced regression risk, preserved deployment stability, and allowed faster iteration within the assignment timeline while keeping the implementation production-safe.
+Originally I considered building a system that would analyze whether recommendations themselves had meaningfully changed, but I realized very quickly that this would add a large amount of complexity around explainability, edge cases, and debugging. Under the assignment timeline, I prioritized reliability and reviewer-verifiable behavior over a more ambitious but riskier implementation.
 
-The re-audit workflow was designed as a natural extension of the original audit pipeline rather than a disconnected parallel system.
+I instead stored pricing snapshots directly inside persisted audits and compared snapshots against the current pricing configuration during re-audit detection. This made the system far simpler to reason about and significantly easier to validate in production.
 
----
+The trade-off is that the current implementation is more infrastructure-oriented than intelligence-oriented. It works reliably, but it does not yet understand nuanced recommendation changes beyond pricing-driven invalidation.
 
-## Why pricing snapshots + snapshot diff detection
-
-Instead of building a semantic recommendation diff engine, I used persisted pricing snapshots combined with direct snapshot comparison.
-
-This approach is:
-
-- deterministic
-- easy to validate
-- reviewer-friendly
-- production-safe
-- simple to debug
-
-Each audit stores the exact pricing snapshot used during generation. Re-audits are triggered when the stored snapshot differs from the current pricing configuration.
-
-This keeps recommendation invalidation explainable because changes can always be traced back to pricing updates.
+Given the timeline, I think this was the correct decision because it allowed me to ship a complete end-to-end workflow instead of a partially working experimental system.
 
 ---
 
-## Why lightweight scheduling infrastructure
+## 2. If we extended the deadline by another 24 hours right now, what's the first thing you'd do?
 
-I used Vercel Cron Jobs instead of introducing queues, workers, or orchestration infrastructure.
+The first thing I would do is redesign the re-audit detection pipeline to support batched and queued processing instead of synchronous execution.
 
-This kept the implementation:
+Right now, the detection flow loops through audits sequentially and performs regeneration inline during the request lifecycle. This works well for the current assignment scope and reviewer validation, but it would not scale cleanly if audit volume increased significantly.
 
-- lightweight
-- deployable inside the existing stack
-- easy for reviewers to test
-- production-compatible
-- low-overhead
+I would introduce:
+- queued re-audit jobs
+- batched email delivery
+- retry handling
+- audit processing status tracking
 
-The system remains extensible if more advanced infrastructure is needed later.
+This would improve:
+- reliability
+- observability
+- scalability
+- operational safety
 
----
+I intentionally avoided building this during the assignment because I wanted to prioritize a stable production-safe implementation first.
 
-## Reliability over infrastructure complexity
-
-I intentionally prioritized:
-
-- end-to-end functionality
-- stable deployments
-- reviewer-verifiable workflows
-- readable implementation
-- production validation
-- minimal operational complexity
-
-instead of building:
-
-- distributed workers
-- queue orchestration
-- analytics pipelines
-- retry systems
-- event buses
-
-The main goal was delivering a complete and reliable re-audit workflow within the assignment constraints.
+The current implementation focuses on correctness and end-to-end functionality, but the processing architecture is the first thing I would evolve if given additional time.
 
 ---
 
-## Email provider migration during production testing
+## 3. Looking back at your Round 1 codebase as a now-experienced user of it: what's one thing your Round 1 self made harder for your Round 2 self?
 
-The initial implementation used Resend, but repeated production validation exposed delivery instability during rapid audit simulations.
+The biggest issue my Round 1 implementation created was inconsistent payload structure and weak normalization around audit inputs.
 
-To improve reliability during testing, I migrated the notification workflow to Brevo SMTP API.
+Different parts of the system referred to audit data as:
+- `stack`
+- `tools`
+- partially normalized tool objects
 
-This preserved the same user-facing functionality while improving operational stability during deployment verification.
+Pricing fields were also inconsistent between:
+- `monthlyCost`
+- `monthlyPrice`
+- `pricePerSeat`
 
----
+This became painful once persistence and re-audit logic were introduced because production flows depended on deterministic audit reconstruction.
 
-## Type-safety hardening during production builds
-
-As persistence and re-audit flows expanded, several assumptions in the original audit engine became unsafe under strict TypeScript validation.
-
-I refactored parts of the pipeline to normalize:
-
+A large amount of Round 2 debugging time was spent normalizing:
 - pricing fields
-- seat counts
-- optional tool properties
+- seat handling
 - audit payload formats
-- recommendation inputs
+- persistence behavior
 
-This improved production reliability and reduced inconsistencies between local and deployed environments.
+The Round 1 system was optimized for fast iteration and feature velocity, but Round 2 exposed how important stable schemas become once persistence, automation, and historical comparisons are added.
 
----
-
-## Use of AI tools during development
-
-I used ChatGPT extensively during implementation for:
-
-- debugging TypeScript issues
-- refactoring repetitive UI components
-- validating architectural tradeoffs
-- generating boilerplate patterns
-- improving developer iteration speed
-- identifying deployment edge cases
-
-However, all architectural decisions, system integration, debugging validation, production testing, and final implementation choices were manually reviewed and adapted during development.
-
-The final system required substantial manual debugging and iteration across:
-
-- Supabase persistence
-- pricing snapshot synchronization
-- production deployment behavior
-- API integration
-- re-audit workflow correctness
-- email delivery validation
-- TypeScript hardening
-- end-to-end testing
-
-AI assistance primarily accelerated implementation speed and iteration quality rather than replacing engineering decision-making.
-
----
-
-## Production learnings
-
-Several deployment-oriented issues surfaced while validating the full workflow end-to-end:
-
-- environment variable mismatches
-- provider validation failures
-- payload normalization bugs
-- strict TypeScript build failures
-- server-side initialization differences
-- stale audit persistence edge cases
-- pricing snapshot synchronization bugs
-
-These were resolved incrementally while continuously validating both local and production behavior.
-
-This significantly improved the stability and reliability of the final implementation.
-
----
-
-## Final reflection
-
-The final system focuses on shipping a complete and production-safe re-audit workflow rather than maximizing infrastructure complexity.
-
-The implementation now supports:
-
-- persistent audit storage
-- pricing snapshot persistence
-- historical comparison
-- automated pricing-change detection
-- compare-page generation
-- email notifications
-- scheduled re-check infrastructure
-- public pricing update tracking
-- production deployment validation
-
-while remaining intentionally simple enough to reason about, validate, test, and extend incrementally.
+That experience changed how I think about data contracts and normalization boundaries in production systems.
