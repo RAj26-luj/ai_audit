@@ -45,8 +45,8 @@ export async function saveAudit({
           input_json:
             inputJson,
 
-          result_json:
-            resultJson,
+          result:
+  resultJson,
 
           pricing_snapshot:
             pricingSnapshot,

@@ -11,7 +11,7 @@ export function useLeadForm(
   const [company, setCompany] = useState("");
   const [role, setRole] = useState("");
 
-  const [teamSize, setTeamSize] = useState(10);
+  const [teamSize, setTeamSize] = useState(0);
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
