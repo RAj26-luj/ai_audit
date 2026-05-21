@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 
-import { supabase } from "@/lib/supabase";
+import { supabase }
+from "@/lib/supabase";
+
+import { TOOLS_CONFIG }
+from "@/data/tools";
 
 import { sendAuditEmail }
 from "@/lib/email/sendAuditEmail";
-
-import { getSimulatedVersion }
-from "../simulate-price-change/route";
 
 import AIAuditEngine
 from "../optimize/engine/AIAuditEngine";
@@ -38,6 +39,9 @@ from "../optimize/utils/calculateBenchmarks";
 import applyRecommendations
 from "../optimize/utils/applyRecommendations";
 
+import { getSimulatedVersion }
+from "../simulate-price-change/route";
+
 export async function POST(){
 
   try{
@@ -55,9 +59,16 @@ export async function POST(){
 
     for(const audit of audits || []){
 
+      //real snapshot diff
       if(
-        audit.pricing_version !==
-        getSimulatedVersion()
+
+        JSON.stringify(
+          audit.pricing_snapshot
+        ) !==
+        JSON.stringify(
+          TOOLS_CONFIG
+        )
+
       ){
 
         const stack =
@@ -69,16 +80,23 @@ export async function POST(){
           audit.input_json?.teamSize || 1;
 
         const engineeringTeamSize =
-          audit.input_json?.engineeringTeamSize ||
+          audit.input_json
+            ?.engineeringTeamSize ||
+
           Math.max(
             1,
-            Math.floor(teamSize * 0.4)
+            Math.floor(
+              teamSize * 0.4
+            )
           );
 
         const primaryUseCase =
-          audit.input_json?.primaryUseCase ||
+          audit.input_json
+            ?.primaryUseCase ||
+
           "General";
 
+        //audit engine
         const engine =
           new AIAuditEngine([
             new SeatUtilizationRule(),
@@ -87,6 +105,7 @@ export async function POST(){
             new PlanDowngradeRule(),
           ]);
 
+        //recommendations
         const recommendations =
           engine.run({
             stack,
@@ -95,20 +114,25 @@ export async function POST(){
             primaryUseCase,
           });
 
+        //optimized stack
         const optimizedStack =
           applyRecommendations(
             stack,
             recommendations
           );
 
+        //spend
         const originalSpend =
-          calcMonthlySpend(stack);
+          calcMonthlySpend(
+            stack
+          );
 
         const optimizedSpend =
           calcMonthlySpend(
             optimizedStack
           );
 
+        //savings
         const monthlySavings =
           originalSpend -
           optimizedSpend;
@@ -118,37 +142,50 @@ export async function POST(){
 
         const savingsPercentage =
           originalSpend > 0
+
             ? Math.round(
                 (
                   monthlySavings /
                   originalSpend
                 ) * 100
               )
+
             : 0;
 
+        //score
         const optimizationScore =
           calculateOptimizationScore({
+
             originalSpend,
+
             savings:
               monthlySavings,
+
             recommendations,
           });
 
+        //risk
         const productivityRisk =
           calculateRisk(
             recommendations
           );
 
+        //benchmarks
         const benchmarks =
           calculateBenchmarks({
+
             originalSpend,
+
             teamSize,
+
             engineeringTeamSize,
           });
 
+        //updated result
         const updatedResult = {
 
-          originalStack:stack,
+          originalStack:
+            stack,
 
           optimizedStack,
 
@@ -171,6 +208,7 @@ export async function POST(){
           benchmarks,
         };
 
+        //update audit
         await supabase
           .from("audits")
           .update({
@@ -178,26 +216,41 @@ export async function POST(){
             updated_result_json:
               updatedResult,
 
+            pricing_snapshot:
+              JSON.parse(
+                JSON.stringify(
+                  TOOLS_CONFIG
+                )
+              ),
+
             pricing_version:
               getSimulatedVersion(),
           })
-          .eq("id",audit.id);
+          .eq(
+            "id",
+            audit.id
+          );
 
+        //send email
         if(audit.email){
 
           await sendAuditEmail({
 
-            to:audit.email,
+            to:
+              audit.email,
 
-            auditId:audit.id,
+            auditId:
+              audit.id,
           });
         }
 
         changedAudits.push({
 
-          auditId:audit.id,
+          auditId:
+            audit.id,
 
-          email:audit.email,
+          email:
+            audit.email,
         });
       }
     }
