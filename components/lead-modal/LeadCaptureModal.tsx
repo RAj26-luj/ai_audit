@@ -87,7 +87,12 @@ export default function LeadCaptureModal({
 
               loading={loading}
 
-              handleSubmit={handleSubmit}
+              handleSubmit={(e:React.FormEvent)=>
+  handleSubmit(
+    e,
+    formData.teamSize
+  )
+}
             />
 
           ) : (
