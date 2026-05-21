@@ -1,58 +1,114 @@
-import { NextResponse } from "next/server";
+import { NextResponse }
+from "next/server";
 
-import { supabase } from "@/lib/supabase";
-import { sendAuditEmail }from "@/lib/email/sendAuditEmail";
-import {getSimulatedVersion}from "../simulate-price-change/route";
+import { supabase }
+from "@/lib/supabase";
 
-export async function POST() {
+import { sendAuditEmail }
+from "@/lib/email/sendAuditEmail";
 
-  try {
+import {
+  getSimulatedVersion
+}
+from "../simulate-price-change/route";
 
-    const { data:audits,error } =
-      await supabase
-        .from("audits")
-        .select("*");
+export async function POST(){
+
+  try{
+
+    const {
+      data:audits,
+      error,
+    } = await supabase
+      .from("audits")
+      .select("*");
 
     if(error){
       throw error;
     }
 
-    const changedAudits = [];
+    const changedAudits=[];
 
-    for(const audit of audits || []){
+    //find changed audits
+    for(
+      const audit of audits || []
+    ){
 
-if(
-  audit.pricing_version !==
-  getSimulatedVersion()
-){
-        if(audit.email){
+      if(
+        audit.pricing_version !==
+        getSimulatedVersion()
+      ){
 
-        await sendAuditEmail({
-        to:audit.email,
-        auditId:audit.id,
-        });
-}
         changedAudits.push({
+
           auditId:audit.id,
+
           email:audit.email,
         });
       }
     }
 
+    //group by email
+    const groupedByEmail:
+    Record<string,any[]> = {};
+
+    for(
+      const audit of changedAudits
+    ){
+
+      if(!audit.email){
+        continue;
+      }
+
+      if(
+        !groupedByEmail[
+          audit.email
+        ]
+      ){
+
+        groupedByEmail[
+          audit.email
+        ] = [];
+      }
+
+      groupedByEmail[
+        audit.email
+      ].push(audit);
+    }
+
+    //send one email per user
+    for(
+      const email
+      in groupedByEmail
+    ){
+
+      await sendAuditEmail({
+
+        to:email,
+
+        audits:
+          groupedByEmail[email],
+      });
+    }
+
     return NextResponse.json({
+
       success:true,
+
       changedAudits,
+
       total:
         changedAudits.length,
     });
 
-  } catch(err){
+  }catch(err){
 
     console.error(err);
 
     return NextResponse.json(
       {
-        error:"detect changes failed",
+        error:
+          "detect changes failed",
       },
       {
         status:500,
