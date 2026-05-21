@@ -1,7 +1,9 @@
 # Round 2 — Persistent Re-Audit System
 
 ## What this PR does
+
 Focused on shipping a reliable end-to-end re-audit workflow by incrementally extending the existing Round 1 architecture instead of introducing new infrastructure.
+
 This PR adds a persistent AI audit re-check system to StackAudit.
 
 The system now:
@@ -48,7 +50,7 @@ Completed audits are stored in Supabase with:
 
 A new endpoint:
 
-`POST /api/detect-changes`
+POST /api/detect-changes
 
 checks all stored audits against current pricing configuration.
 
@@ -70,7 +72,7 @@ When pricing changes are detected:
 
 New route:
 
-`/audit/[id]/compare`
+/audit/[id]/compare
 
 Displays stored recommendations and savings information.
 
@@ -97,11 +99,56 @@ The system is designed to be cron-compatible later.
 
 ## How to test manually
 
-### Create audit
+## Reviewer Quick Test Flow
 
-Run:
+### 1. Create an audit
 
-```bash
-curl -X POST http://localhost:3000/api/optimize \
--H "Content-Type: application/json" \
--d '{...}'
+Open the app normally and generate an audit.
+
+---
+
+### 2. Simulate pricing changes
+
+Open:
+
+data/tools.ts
+
+Change a pricing value.
+
+Example:
+
+ts monthlyPrice:20 
+
+to:
+
+ts monthlyPrice:50 
+
+---
+
+### 3. Redeploy or restart server
+
+The updated pricing snapshot will now differ from stored audit snapshots.
+
+---
+
+### 4. Trigger re-audit detection
+
+Call:
+
+bash curl -X POST http://localhost:3000/api/detect-changes 
+
+---
+
+### 5. Verify compare page
+
+Open:
+
+/audit/[id]/compare
+
+The compare page will reflect updated recommendations and pricing differences.
+
+---
+
+### 6. Verify email trigger flow
+
+If recommendations changed, the Resend email flow will trigger with the updated compare link.
