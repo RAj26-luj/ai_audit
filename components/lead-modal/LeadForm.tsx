@@ -44,7 +44,20 @@ export default function LeadForm({
         <FormInput label="Your Role" icon={<Briefcase size={14} />} type="text" placeholder="Engineering Manager" value={role} onChange={(e) => setRole(e.target.value)} />
 
         {/* size */}
-        <FormInput label="Team Size" icon={<Users size={14} />} type="number" placeholder="10" value={teamSize === 0 ? "" : teamSize} onChange={(e) => setTeamSize(e.target.value === "" ? 0 : Number(e.target.value))} />
+       <FormInput
+  label="Team Size"
+  icon={<Users size={14} />}
+  type="number"
+  placeholder="10"
+  value={teamSize}
+  onChange={(e)=>
+    setTeamSize(
+      e.target.value === ""
+        ? ""
+        : Number(e.target.value)
+    )
+  }
+/>
 
         {/* submit */}
         <SubmitButton loading={loading} />

@@ -11,7 +11,7 @@ export function useLeadForm(
   const [company, setCompany] = useState("");
   const [role, setRole] = useState("");
 
-  const [teamSize, setTeamSize] = useState(0);
+  const [teamSize, setTeamSize] = useState<number | "">(1);
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -27,12 +27,13 @@ export function useLeadForm(
 
       setLoading(true);
 
-      await onSubmit({
-        email,
-        company,
-        role,
-        teamSize,
-      });
+     await onSubmit({
+  email,
+  company,
+  role,
+  teamSize:
+    Number(teamSize) || 1,
+});
 
       setSuccess(true);
 
