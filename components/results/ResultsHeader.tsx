@@ -4,6 +4,9 @@ import { CheckCircle2, Sparkles, Home } from "lucide-react";
 import { motion } from "framer-motion";
 
 import ShareButton from "./ShareButton";
+import Link from "next/link";
+import { GitCompare } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 //results header
 export default function ResultsHeader() {
@@ -11,6 +14,7 @@ export default function ResultsHeader() {
   const handleBackHome = () => {
     window.location.href = "/";
   };
+  const pathname = usePathname();
 
   return (
 
@@ -84,8 +88,18 @@ export default function ResultsHeader() {
 
           {/* right */}
           <div className="flex items-center gap-3">
-            <ShareButton />
-          </div>
+
+      <Link
+       href={`${pathname}/compare`}
+       className="flex items-center gap-2 px-4 py-3 rounded-2xl border border-white/10 bg-white/5 text-white text-sm font-semibold hover:bg-white/10 transition-all"
+         >
+      <GitCompare size={16} />
+       Compare Re-Audit
+      </Link>
+
+  <ShareButton />
+
+</div>
 
         </div>
 
